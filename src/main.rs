@@ -1,8 +1,14 @@
+use handlebars::Handlebars;
 use pulldown_cmark::{CowStr, Tag, TagEnd, TextMergeStream};
 use pulldown_cmark::{Event, Parser};
+use serde::Serialize;
+use std::collections::HashMap;
+use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use tera::Tera;
+use tinytemplate::TinyTemplate;
 use yaml_rust::{Yaml, YamlLoader};
 
 #[derive(Debug, Clone)]
@@ -18,6 +24,11 @@ struct Config {
     posts: Vec<Post>,
 }
 
+#[derive(Serialize)]
+struct Context {
+    content: String,
+}
+
 fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
     for post in config.posts {
         iter.push(Event::Start(Tag::List(None)));
@@ -29,7 +40,14 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
 }
 
 fn main() -> Result<(), std::io::Error> {
-    // Read the YAML file
+    let stylesheet = r#"
+
+    .header {
+        background-color: dodgerblue;
+    }
+
+    "#;
+
     let mut file = File::open("PUSHPIN.yaml")?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
@@ -60,8 +78,66 @@ fn main() -> Result<(), std::io::Error> {
     let mut html_output = String::new();
     pulldown_cmark::html::push_html(&mut html_output, transformed.into_iter());
 
+    let template_str = r#"
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>My Markdown Content</title>
+        <link rel="stylesheet" href="style/stylesheet.css">
+        <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+        <style>
+
+        .container {
+            width: 400px;
+            margin: 20px;
+            padding: 25px;
+            border-radius: 20px;
+            border-width: 1px;
+            border-color: black;
+            border-style: solid;
+            box-shadow: black 5px 5px;
+
+            font-family: 'Merriweather', serif;
+            position: relative;
+        }
+
+        .outer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            position: relative;
+
+        }
+
+        </style>
+    </head>
+    <body>
+        <div class="outer">
+        <div class="container">
+        {{content}}
+        </div>
+        </div>
+    </body>
+    </html>
+"#;
+
+    let mut tera = Tera::new("templates/**/*").unwrap();
+    tera.add_raw_template("hello", &template_str).unwrap();
+
+    let mut context = tera::Context::new();
+    context.insert("content", &html_output);
+
+    let rendered = tera.render("hello", &context).unwrap();
+
     let mut index = File::create("index.html").unwrap();
-    write!(index, "{}", html_output);
+    write!(index, "{}", rendered);
+
+    fs::create_dir("style");
+    let mut style = File::create("style/stylesheet.css").unwrap();
+    write!(style, "{}", stylesheet);
 
     Ok(())
 }
