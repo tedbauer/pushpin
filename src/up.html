@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Ted Bauer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        .card {
+            width: 500px;
+            padding: 25px;
+            border-radius: 5%;
+            border-color: black;
+            border-style: solid;
+            top: 50px;
+            box-shadow: black 3px 3px;
+
+            font-family: 'Merriweather', sans-serif;
+        }
+
+        .posts {
+            width: 600px;
+            margin: 20px;
+            padding: 25px;
+            border-width: 1px;
+            border-radius: 20px;
+            border-color: black;
+            border-style: solid;
+            box-shadow: black 5px 5px;
+
+            font-family: 'Merriweather', serif;
+            position: relative;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            position: relative;
+        }
+
+        .butt {
+            padding: 3px;
+            width: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            /* Vertically align items */
+
+            /* Initial background color */
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            /* Set smooth transition */
+            /* Optional: Set default cursor (optional) */
+
+        }
+
+        .butt:hover {
+            background-color: dodgerblue;
+            /* Hover background color */
+            background-color: lightblue;
+            transform: scale(1.05);
+            /* Increase size by 5% */
+
+        }
+
+        .butt img {
+            padding: 5px;
+        }
+
+        .code-inline {
+            font-size: 1.2em;
+            font-family: Consolas, monaco, monospace;
+            background-color:#eeeee4;
+            border-radius: 5px;
+            color: #751e5a;
+            display: inline;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+
+        .code-snippet {
+            font-size: 1.2em;
+            font-family: Consolas, monaco, monospace;
+            background-color: #eeeee4;
+            white-space: nowrap;
+            border-radius: 5px;
+            border-color: black;
+            font-weight: 200;
+            border-width: 2px;
+            color:  #751e5a;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+
+        <div class="posts">
+
+            <a class="butt" href="index.html">
+                <img src="back.png" width="20px" height="20px">back
+            </a>
+
+            <h1>
+                <div class=code-inline>up</div>: climb directories more easily
+            </h1>
+
+            <h2>Introduction</h2>
+            <span>
+
+            I have been working in some deeply nested Git repositories lately, and find myself typing <div class="code-inline">cd ..</div> a lot. I wrote a simple CLI tool to help with that. Solving my own annoyance has been great, it's also been a great opportunity to get some experience with:
+            <ul>
+                <li>Distribute a small script with a reproducible installation</li>
+                <li>Learn how to add autocomplete to Unix command line tools</li>
+</ul>
+
+            </span>
+
+            <p>
+            <div class="code-inline">up</div> is a small command line utility that helps you type <div class="code-inline">cd ..</div> less.
+
+            </p>
+            <div class="code-snippet">
+                $ pwd<br>
+                /path/to/some/deeply/nested/directory<br>
+                $ up dee<br>
+                $ pwd<br>
+                /path/to/some/deeply    
+            </div>
+
+            It also features autocomplete, so you can type <div class="code-inline">up d</div> and hit tab to complete the directory name.
+
+            <script src="https://asciinema.org/a/0NH81SQah29toysOIXCMHQNvM.js" id="asciicast-656799" async="true"></script>
+
+            <h2>Implementing autocomplete</h2>
+            Implementing tap-completion for a command in Unix is not too bad. The <div class="code-inline">complete</div> command attaches a function to execute when the user tabs after a command:
+
+            <div class="code-snippet">
+                complete -F up_completion up
+            </div>
+
+            <div class="code-inline">$COMP_CWORD</div> contains the index of the cursor into the arguments. <div class="code-inline">$COMP_LINE</div> contains a string of what's in the command line currently.
+
+            For our tab completion, we take the current working directory, and break down into each directory in the path. I handled it in a Rust binary, so the complete function had to thread through the environment variables:
+
+            <div class="code-snippet">
+                up_completion() {<br>
+                    &ensp;completions=\<br>
+                    &ensp;$($BINARY_PATH --complete $COMP_CWORD $COMP_LINE)<br>
+                    &ensp;COMPREPLY=($completions)<br>
+                }<br>
+<br>
+&ensp;complete -F up_completion up
+            </div>
+
+            The binary threads the information through and then outputs the info:
+            <div class="code-snippet">
+
+            fn generate_completion_options(working_dir: &str, arg: &str, comp_cword: usize) -> Vec<String> {
+                    if comp_cword > 1 {
+                        return vec![];
+                    }
+                
+                    let directories = working_dir
+                        .split('/')
+                        .map(|s| String::from(s))
+                        .collect::<Vec<String>>();
+                
+                    let arg = match arg.split(" ").nth(1) {
+                        Some(arg) => arg,
+                        None => return directories,
+                    };
+                
+                    let mut result = Vec::new();
+                    for (_, directory) in directories.iter().enumerate() {
+                        if directory.starts_with(arg) {
+                            result.push(directory.to_string());
+                        }
+                    }
+                
+                    if result.is_empty() {
+                        directories
+                    } else {
+                        result
+                    }
+                }
+            </div>
+
+
+            <h2>Alternatives</h2>
+            <span>
+            <div class="code-inline">z</div> is a cult favorite and inspiration. Fuzzy finders like <div class="code-inline">fzf</div> are also super helpful. I find that using one of these in conjunction with <div class="code-inline">up</div> is a great way to navigate directories. Sometimes it's just a little simpler to just type <div class="code-inline">up</div> and hit tab.
+</span>
+<span>My colleague, <a href="google.com">Marten</a>, showed me a neat alias, <div class="code-inline">groot</div>, which finds whichever Git repository you're in, and <div class="code-inline">cd</div>'s you there.</span>
+
+<h2>Try it out</h2>
+It's available in this Git repository: https://github.com/tedbauer/homebrew-up.
+
+        </div>
+
+    </div>
+
+
+
+</body>
+
+</html>
