@@ -5,9 +5,11 @@ use std::io::Write;
 
 use crate::Config;
 use anyhow::{anyhow, Result};
+use pulldown_cmark::Alignment;
 use pulldown_cmark::CowStr;
 use pulldown_cmark::DefaultBrokenLinkCallback;
 use pulldown_cmark::Event;
+use pulldown_cmark::InlineStr;
 use pulldown_cmark::LinkType;
 use pulldown_cmark::Parser;
 use pulldown_cmark::Tag;
@@ -16,21 +18,27 @@ use pulldown_cmark::TextMergeStream;
 use tera::Tera;
 
 fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
+    iter.push(Event::Start(Tag::Table(vec![Alignment::None; 2])));
     for post in config.posts {
         let post_name = post.name;
-        iter.push(Event::Start(Tag::List(None)));
-        iter.push(Event::Start(Tag::Item));
+
+        iter.push(Event::Start(Tag::TableRow));
+        iter.push(Event::Start(Tag::TableCell));
+        iter.push(Event::Text(post.date.into()));
+        iter.push(Event::End(TagEnd::TableCell));
+
+        iter.push(Event::Start(Tag::TableCell));
         iter.push(Event::Start(Tag::Link {
             link_type: LinkType::Inline,
             dest_url: format!("posts/{post_name}.html").into(),
             title: post.title.clone().into(),
             id: post_name.into(),
         }));
-        iter.push(Event::Text(post.title.clone().into()));
-        iter.push(Event::End(TagEnd::Link));
-        iter.push(Event::End(TagEnd::Item));
-        iter.push(Event::End(TagEnd::List(false)));
+        iter.push(Event::End(TagEnd::TableCell));
+
+        iter.push(Event::End(TagEnd::TableRow));  
     }
+    iter.push(Event::End(TagEnd::Table));
 }
 
 fn expand_macros<'a>(
@@ -114,7 +122,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
     write!(stylesheet_file, "{}", stylesheet)?;
 
     let back_arrow_image = include_bytes!("images/back.png");
-    let mut back_arrow_file = File::create("images/back.png");
+    let back_arrow_file = File::create("images/back.png");
     back_arrow_file?.write_all(back_arrow_image)?;
 
     write_page(&config.homepage, "index.html", "index", &tera, config, &config.homepage)?;
