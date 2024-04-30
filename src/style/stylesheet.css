@@ -1,0 +1,23 @@
+.card {
+    width: 400px;
+    margin: 20px;
+    padding: 25px;
+    position: relative;
+    
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+
+    box-shadow: black 5px 5px;
+
+    font-family: 'Merriweather', serif;
+}
+
+.toplevel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    position: relative;
+}
