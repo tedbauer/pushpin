@@ -10,7 +10,10 @@
     <body>
         <div class="toplevel">
         <div class="card">
-        <img src="../images/back.png" alt="A back arrow"> Back
+        <a class="back-button" href="../index.html">
+            <img src="../images/back.png" width="20px" height="20px">back
+        </a>
+
         {{content}}
 
         <a href="https://github.com/tedbauer/tedbauer.github.io/edit/master/pages/{{path}}">Fix a typo</a>
