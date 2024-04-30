@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Ted Bauer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        .card {
+            width: 500px;
+            padding: 25px;
+            border-radius: 5px;
+            border-color: black;
+            border-style: solid;
+            top: 50px;
+            box-shadow: black 3px 3px;
+
+            font-family: 'Merriweather', serif;
+        }
+
+        .posts {
+            width: 400px;
+            margin: 20px;
+            padding: 25px;
+            border-radius: 20px;
+            border-width: 1px;
+            border-color: black;
+            border-style: solid;
+            box-shadow: black 5px 5px;
+
+            font-family: 'Merriweather', serif;
+            position: relative;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            position: relative;
+        }
+
+        .container2 {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+
+        .butt {
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            text-decoration: none;
+            /* Vertically align items */
+
+            /* Initial background color */
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            /* Set smooth transition */
+            /* Optional: Set default cursor (optional) */
+
+        }
+
+        .butt2 {
+            padding: 3px;
+            border-radius: 10%;
+            display: inline-block;
+            color: purple;
+            text-decoration: none;
+            /* Vertically align items */
+
+            /* Initial background color */
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            /* Set smooth transition */
+            cursor: default;
+            /* Optional: Set default cursor (optional) */
+
+        }
+
+        .butt2:hover {
+            background-color: dodgerblue;
+            /* Hover background color */
+            background-color: lightblue;
+            transform: scale(1.05);
+            /* Increase size by 5% */
+
+        }
+
+
+
+        .butt:hover {
+            background-color: dodgerblue;
+            /* Hover background color */
+            background-color: lightblue;
+            transform: scale(1.05);
+            /* Increase size by 5% */
+
+        }
+
+        .code-inline {
+            font-size: 1.2em;
+            font-family: Consolas, monaco, monospace;
+            background-color: lightgray;
+            border-radius: 10%;
+            color: green;
+            height: 27px;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+
+
+        .butt img {
+            padding: 5px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+
+        <div class="posts">
+            <h1>Theodore Bauer</h1>
+            <table>
+                <tr>
+                    <td>
+        </td>
+        <td><ul style="list-style: none;">
+            <li><div style="color: purple" class="butt">GitHub</div></li>
+            <li><div style="color: purple" class="butt">Bandcamp</div></li>
+            <li><div style="color: purple" class="butt">Palestine</div></li>
+
+        </ul></td>
+        </tr>
+        </table>
+            <p>Yo yo yo. By trade, I am a software engineer based in New York City. I'm interested in how low-level-ish systems work, like operating systems, memory, language runtimes.
+            </p>
+
+            <p>At work, my main project right now is to shift how Android is developed: check in all code changes behind flags.</p>
+
+            <p>Some high level topics I am interested in to give the vibe of what you might see here:</p>
+            <ul>
+                <li>Operating systems, kernels</li>
+                <li>Modular synthesizers</li>
+                <li>Music technology</li>
+                <li>Aquariums</li>
+            </ul>
+
+            <div class="container2">
+            <h2>Posts</h2>
+</div>
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="color: grey">4/27/2024 </td>
+                        <td><a class="butt" href="file:///home/ted/Documents/personal-site/up.html"><div class="code-inline">up</div>: a humble tool for ascending directories</a></td>
+                    </tr>
+                    <tr>
+                        <td style="color: grey">5/5/2024 </td>
+                        <td><a class="butt" href="file:///home/ted/Documents/personal-site/up.html">Making a tiny little static site generator</a></td>
+                    </tr>
+                    <tr>
+                        <td style="color: grey">7/5/2024 </td>
+                        <td><a class="butt" href="file:///home/ted/Documents/personal-site/up.html">Binder IPC: how does it work?</a></td>
+                    </tr>
+                    <tr>
+                        <td style="color: grey">4/27/2024 </td>
+                        <td><a class="butt" href="file:///home/ted/Documents/personal-site/up.html">Building a mult for a modular synthesizer</td>
+                    </tr>
+                    <tr>
+                        <td style="color: grey">4/27/2024 </td>
+                        <td><a class="butt" href="file:///home/ted/Documents/personal-site/up.html">Explaining the Muddy Children puzzle to myself</td>
+                    </tr>
+                </tbody>
+                </tbody>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+</body>
+
+</html>
