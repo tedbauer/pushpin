@@ -56,6 +56,7 @@ fn generate_page(
     template_name: &str,
     tera: &Tera,
     config: &Config,
+    source_path: &str
 ) -> Result<String> {
     let iterator = TextMergeStream::new(Parser::new(&markdown));
     let html_content = expand_macros(iterator, &config).and_then(|events| {
@@ -66,6 +67,7 @@ fn generate_page(
 
     let mut context = tera::Context::new();
     context.insert("content", &html_content);
+    context.insert("path", source_path);
 
     tera.render(template_name, &context)
         .map_err(|err| anyhow!("tera render failed: {err}"))
@@ -77,12 +79,13 @@ fn write_page(
     template_name: &str,
     tera: &Tera,
     config: &Config,
+    source_path: &str,
 ) -> Result<()> {
     let markdown_file = File::open(format!("pages/{markdown_path}"));
     let mut markdown_content = String::new();
     markdown_file?.read_to_string(&mut markdown_content)?;
 
-    let rendered_html = generate_page(&markdown_content, template_name, tera, config)?;
+    let rendered_html = generate_page(&markdown_content, template_name, tera, config, source_path)?;
 
     let mut target_file = File::create(target_path).unwrap();
     write!(target_file, "{}", rendered_html).map_err(|err| anyhow!("error: {err}"))
@@ -108,7 +111,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
     let mut stylesheet_file = File::create("style/stylesheet.css")?;
     write!(stylesheet_file, "{}", stylesheet)?;
 
-    write_page(&config.homepage, "index.html", "index", &tera, config)?;
+    write_page(&config.homepage, "index.html", "index", &tera, config, &config.homepage)?;
     let mut num_generated_files = 1;
 
     fs::create_dir_all("posts")?;
@@ -120,6 +123,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
             "post",
             &tera,
             config,
+            &post.path
         )?;
 
         num_generated_files += 1;
