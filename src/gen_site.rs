@@ -106,10 +106,16 @@ fn load_templates() -> Result<Tera> {
 pub(crate) fn generate(config: &Config) -> Result<usize> {
     let tera = load_templates()?;
 
-    let stylesheet = include_str!("style/stylesheet.css");
     fs::create_dir_all("style")?;
+    fs::create_dir_all("images")?;
+
+    let stylesheet = include_str!("style/stylesheet.css");
     let mut stylesheet_file = File::create("style/stylesheet.css")?;
     write!(stylesheet_file, "{}", stylesheet)?;
+
+    let back_arrow_image = include_bytes!("images/back.png");
+    let mut back_arrow_file = File::create("images/back.png");
+    back_arrow_file?.write_all(back_arrow_image)?;
 
     write_page(&config.homepage, "index.html", "index", &tera, config, &config.homepage)?;
     let mut num_generated_files = 1;
