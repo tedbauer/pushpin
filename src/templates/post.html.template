@@ -13,7 +13,7 @@
         Back
         {{content}}
 
-        <a href="https://github.com/tedbauer/tedbauer.github.io/tree/master/pages/{{path}}>Fix a typo</a>
+        <a href="https://github.com/tedbauer/tedbauer.github.io/edit/master/pages/{{path}}">Fix a typo</a>
         </div>
         </div>
     </body>
