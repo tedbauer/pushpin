@@ -22,7 +22,6 @@
     position: relative;
 }
 
-
 .back-button {
     padding: 3px;
     width: 80px;
@@ -31,6 +30,10 @@
     align-items: center;
     text-decoration: none;
     transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.back-button img {
+    padding: 5px;
 }
 
 .back-button:hover {
