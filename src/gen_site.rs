@@ -18,7 +18,7 @@ use pulldown_cmark::TextMergeStream;
 use tera::Tera;
 
 fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
-    iter.push(Event::Start(Tag::Table(vec![Alignment::None; 2])));
+    iter.push(Event::Start(Tag::Table(vec![Alignment::Left; 2])));
     for post in config.posts {
         let post_name = post.name;
         let date_string = post.date.replace("-", "/");
