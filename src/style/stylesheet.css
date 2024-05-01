@@ -38,3 +38,17 @@
     background-color: lightblue;
     transform: scale(1.05);
 }
+
+.index-link {
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.index-link:hover {
+    background-color: dodgerblue;
+    background-color: lightblue;
+    transform: scale(1.05);
+}

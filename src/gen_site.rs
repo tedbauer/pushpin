@@ -24,25 +24,19 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
         let date_string = post.date.replace("-", "/");
 
         iter.push(Event::Start(Tag::TableRow));
-        iter.push(Event::Start(Tag::TableCell));
 
+        iter.push(Event::Start(Tag::TableCell));
         iter.push(Event::Html(format!(
             r#"<div style="color: grey">{date_string}</div>"#,
         ).into()));
-
-        iter.push(Event::Text(post.date.replace("-", "/").into()));
         iter.push(Event::End(TagEnd::TableCell));
 
         iter.push(Event::Start(Tag::TableCell));
-
         iter.push(Event::Html(format!(
-            r#"<a class="back-button" href="posts/{post_name}.html">{post_title}</a>"#,
+            r#"<a class="index-link" href="posts/{post_name}.html">{post_title}</a>"#,
             post_name = post_name,
             post_title = post.title
         ).into()));
-
-        iter.push(Event::Text(post.title.into()));
-        iter.push(Event::End(TagEnd::Link));
         iter.push(Event::End(TagEnd::TableCell));
 
         iter.push(Event::End(TagEnd::TableRow));
