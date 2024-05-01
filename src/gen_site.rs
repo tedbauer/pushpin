@@ -24,7 +24,7 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
 
         iter.push(Event::Start(Tag::TableRow));
         iter.push(Event::Start(Tag::TableCell));
-        iter.push(Event::Text(post.date.into()));
+        iter.push(Event::Text(post.date.replace("-", "/").into()));
         iter.push(Event::End(TagEnd::TableCell));
 
         iter.push(Event::Start(Tag::TableCell));
@@ -34,9 +34,11 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
             title: post.title.clone().into(),
             id: post_name.into(),
         }));
+        iter.push(Event::Text(post.title.into()));
+        iter.push(Event::End(TagEnd::Link));
         iter.push(Event::End(TagEnd::TableCell));
 
-        iter.push(Event::End(TagEnd::TableRow));  
+        iter.push(Event::End(TagEnd::TableRow));
     }
     iter.push(Event::End(TagEnd::Table));
 }
@@ -64,7 +66,7 @@ fn generate_page(
     template_name: &str,
     tera: &Tera,
     config: &Config,
-    source_path: &str
+    source_path: &str,
 ) -> Result<String> {
     let iterator = TextMergeStream::new(Parser::new(&markdown));
     let html_content = expand_macros(iterator, &config).and_then(|events| {
@@ -125,7 +127,14 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
     let back_arrow_file = File::create("images/back.png");
     back_arrow_file?.write_all(back_arrow_image)?;
 
-    write_page(&config.homepage, "index.html", "index", &tera, config, &config.homepage)?;
+    write_page(
+        &config.homepage,
+        "index.html",
+        "index",
+        &tera,
+        config,
+        &config.homepage,
+    )?;
     let mut num_generated_files = 1;
 
     fs::create_dir_all("posts")?;
@@ -137,7 +146,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
             "post",
             &tera,
             config,
-            &post.path
+            &post.path,
         )?;
 
         num_generated_files += 1;
