@@ -9,8 +9,6 @@ use pulldown_cmark::Alignment;
 use pulldown_cmark::CowStr;
 use pulldown_cmark::DefaultBrokenLinkCallback;
 use pulldown_cmark::Event;
-use pulldown_cmark::InlineStr;
-use pulldown_cmark::LinkType;
 use pulldown_cmark::Parser;
 use pulldown_cmark::Tag;
 use pulldown_cmark::TagEnd;
