@@ -25,7 +25,7 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
 
         iter.push(Event::Start(Tag::TableCell));
         iter.push(Event::Html(format!(
-            r#"<div style="color: grey">{date_string}</div>"#,
+            r#"<div style="color: grey; font-weight: lighter;">{date_string}</div>"#,
         ).into()));
         iter.push(Event::End(TagEnd::TableCell));
 
