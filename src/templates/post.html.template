@@ -6,6 +6,8 @@
         <link
         href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
         rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     </head>
     <body>
         <div class="toplevel">
@@ -19,5 +21,6 @@
         <a href="https://github.com/tedbauer/tedbauer.github.io/edit/master/pages/{{path}}">Fix a typo</a>
         </div>
         </div>
+    <script>hljs.highlightAll();</script>
     </body>
 </html>

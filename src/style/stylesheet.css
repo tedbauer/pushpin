@@ -1,5 +1,5 @@
 .card {
-    width: 400px;
+    width: 480px;
     margin: 20px;
     padding: 25px;
     position: relative;
@@ -56,3 +56,8 @@
     background-color: lightblue;
     transform: scale(1.05);
 }
+
+img {
+    max-width: 90%;
+}
+	
