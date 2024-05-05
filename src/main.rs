@@ -1,6 +1,3 @@
-use pulldown_cmark::Event;
-use pulldown_cmark::{LinkType, Tag, TagEnd};
-
 use std::fs::File;
 use std::io::Read;
 

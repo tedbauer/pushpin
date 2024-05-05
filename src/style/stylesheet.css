@@ -56,8 +56,9 @@
     background-color: lightblue;
     transform: scale(1.05);
 }
-
-img {
-    max-width: 90%;
-}
 	
+.content img {
+    width: 100%;  /* Stretch image to fill container width */
+    height: 100%; /* Stretch image to fill container height */
+    object-fit: cover;  /* Maintain aspect ratio, cover container */
+}

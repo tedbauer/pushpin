@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>My Markdown Content</title>
+	<title>{{title}}</title>
         <link rel="stylesheet" href="../style/stylesheet.css">
         <link
         href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
@@ -16,7 +16,11 @@
             <img src="../images/back.png" width="20px" height="20px">back
         </a>
 
+	<div class="content">
+
         {{content}}
+
+	</div>
 
         <a href="https://github.com/tedbauer/tedbauer.github.io/edit/master/pages/{{path}}">Fix a typo</a>
         </div>

@@ -24,17 +24,21 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
         iter.push(Event::Start(Tag::TableRow));
 
         iter.push(Event::Start(Tag::TableCell));
-        iter.push(Event::Html(format!(
-            r#"<div style="color: grey; font-weight: lighter;">{date_string}</div>"#,
-        ).into()));
+        iter.push(Event::Html(
+            format!(r#"<div style="color: grey; font-weight: lighter;">{date_string}</div>"#,)
+                .into(),
+        ));
         iter.push(Event::End(TagEnd::TableCell));
 
         iter.push(Event::Start(Tag::TableCell));
-        iter.push(Event::Html(format!(
-            r#"<a class="index-link" href="posts/{post_name}.html">{post_title}</a>"#,
-            post_name = post_name,
-            post_title = post.title
-        ).into()));
+        iter.push(Event::Html(
+            format!(
+                r#"<a class="index-link" href="posts/{post_name}.html">{post_title}</a>"#,
+                post_name = post_name,
+                post_title = post.title
+            )
+            .into(),
+        ));
         iter.push(Event::End(TagEnd::TableCell));
 
         iter.push(Event::End(TagEnd::TableRow));
@@ -66,6 +70,7 @@ fn generate_page(
     tera: &Tera,
     config: &Config,
     source_path: &str,
+    title: &str,
 ) -> Result<String> {
     let iterator = TextMergeStream::new(Parser::new(&markdown));
     let html_content = expand_macros(iterator, &config).and_then(|events| {
@@ -76,6 +81,7 @@ fn generate_page(
 
     let mut context = tera::Context::new();
     context.insert("content", &html_content);
+    context.insert("title", title);
     context.insert("path", source_path);
 
     tera.render(template_name, &context)
@@ -89,12 +95,20 @@ fn write_page(
     tera: &Tera,
     config: &Config,
     source_path: &str,
+    title: &str,
 ) -> Result<()> {
     let markdown_file = File::open(format!("pages/{markdown_path}"));
     let mut markdown_content = String::new();
     markdown_file?.read_to_string(&mut markdown_content)?;
 
-    let rendered_html = generate_page(&markdown_content, template_name, tera, config, source_path)?;
+    let rendered_html = generate_page(
+        &markdown_content,
+        template_name,
+        tera,
+        config,
+        source_path,
+        title,
+    )?;
 
     let mut target_file = File::create(target_path).unwrap();
     write!(target_file, "{}", rendered_html).map_err(|err| anyhow!("error: {err}"))
@@ -133,6 +147,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
         &tera,
         config,
         &config.homepage,
+        "Theodore Bauer",
     )?;
     let mut num_generated_files = 1;
 
@@ -146,6 +161,7 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
             &tera,
             config,
             &post.path,
+            &post.title,
         )?;
 
         num_generated_files += 1;
