@@ -1,4 +1,9 @@
+body {
+    background-color: #edfff3;
+}
+
 .card {
+    background-color: white;
     width: 380px;
     margin: 20px;
     padding: 25px;
