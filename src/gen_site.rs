@@ -9,6 +9,7 @@ use pulldown_cmark::Alignment;
 use pulldown_cmark::CowStr;
 use pulldown_cmark::DefaultBrokenLinkCallback;
 use pulldown_cmark::Event;
+use pulldown_cmark::Options;
 use pulldown_cmark::Parser;
 use pulldown_cmark::Tag;
 use pulldown_cmark::TagEnd;
@@ -72,7 +73,9 @@ fn generate_page(
     source_path: &str,
     title: &str,
 ) -> Result<String> {
-    let iterator = TextMergeStream::new(Parser::new(&markdown));
+    let mut options = pulldown_cmark::Options::empty();
+    options.insert(Options::ENABLE_TABLES);
+    let iterator = TextMergeStream::new(Parser::new_ext(&markdown, options));
     let html_content = expand_macros(iterator, &config).and_then(|events| {
         let mut html_output = String::new();
         pulldown_cmark::html::push_html(&mut html_output, events.into_iter());
