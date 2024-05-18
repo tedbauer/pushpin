@@ -1,5 +1,5 @@
 .card {
-    width: 480px;
+    width: 380px;
     margin: 20px;
     padding: 25px;
     position: relative;
@@ -12,6 +12,7 @@
     box-shadow: black 5px 5px;
 
     font-family: 'Merriweather', serif;
+    font-size: 80%;
 }
 
 .toplevel {
