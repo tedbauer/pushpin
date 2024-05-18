@@ -59,7 +59,9 @@
 }
 	
 .content img {
-    width: 100%;  /* Stretch image to fill container width */
-    height: 100%; /* Stretch image to fill container height */
+    width: 90%;  /* Stretch image to fill container width */
+    height: 90%; /* Stretch image to fill container height */
     object-fit: cover;  /* Maintain aspect ratio, cover container */
+    border-style: solid;
+    border-width: 1px;
 }
