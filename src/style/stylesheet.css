@@ -20,6 +20,12 @@ body {
     font-size: 80%;
 }
 
+@media screen and (max-width: 768px) {
+  .card {
+    width: 80%;
+  }
+}
+
 .toplevel {
     display: flex;
     justify-content: center;
