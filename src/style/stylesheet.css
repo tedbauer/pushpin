@@ -20,7 +20,7 @@ body {
     font-size: 80%;
 }
 
-@media screen and (max-width: 768px) {
+@media only screen and (device-pixel-ratio: 3) and (orientation: portrait) {
   .card {
     width: 80%;
   }
