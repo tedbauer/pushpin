@@ -20,18 +20,18 @@ body {
     font-size: 80%;
 }
 
-@media only screen and (max-width: 600px) {
-    .card {
-        width: 100%;
-        margin: 0;
-        padding: 15px;
-        border-radius: 0;
-        box-shadow: none;
+@media only screen and (max-width: 767px) {
+    .toplevel {
+        padding: 20px;
     }
 
-    body {
-        margin: 0;
-        padding: 0;
+    .card {
+        width: calc(100% - 40px);
+        max-width: 480px;
+        margin: 10px auto;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: black 3px 3px;
     }
 }
 
