@@ -30,7 +30,10 @@ body {
         max-width: 480px;
         margin: 10px auto;
         padding: 20px;
-	border-radius: 20px;
+        border-radius: 20px;
+        border-width: 1px;
+        border-color: black;
+        border-style: solid;
         box-shadow: black 5px 5px;
     }
 }
