@@ -135,9 +135,13 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
     fs::create_dir_all("style")?;
     fs::create_dir_all("images")?;
 
-    let stylesheet = include_str!("style/stylesheet.css");
-    let mut stylesheet_file = File::create("style/stylesheet.css")?;
-    write!(stylesheet_file, "{}", stylesheet)?;
+    let stylesheet_home = include_str!("style/stylesheet.css");
+    let mut stylesheet_home_file = File::create("style/stylesheet.css")?;
+    write!(stylesheet_home_file, "{}", stylesheet_home)?;
+
+    let stylesheet_post = include_str!("style/post.css");
+    let mut stylesheet_post_file = File::create("style/post.css")?;
+    write!(stylesheet_post_file, "{}", stylesheet_post)?;
 
     let back_arrow_image = include_bytes!("images/back.png");
     let back_arrow_file = File::create("images/back.png");

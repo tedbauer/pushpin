@@ -1,0 +1,93 @@
+body {
+    background-color: #edfff3;
+}
+
+.card {
+    background-color: white;
+    width: 380px;
+    margin: 20px;
+    padding: 25px;
+    position: relative;
+
+    border-radius: 20px;
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+
+    box-shadow: black 5px 5px;
+
+    font-family: 'Merriweather', serif;
+    font-size: 80%;
+}
+
+@media only screen and (max-width: 767px) {
+    .toplevel {
+        padding: 20px;
+    }
+
+    .card {
+        width: calc(100% - 10px);
+        max-width: 480px;
+        margin: 10px auto;
+        padding: 20px;
+        border-radius: 20px;
+        border-width: 1px;
+        border-color: black;
+        border-style: solid;
+        box-shadow: black 5px 5px;
+    }
+}
+
+.toplevel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    position: relative;
+}
+
+.back-button {
+    padding: 3px;
+    width: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.back-button img {
+    padding: 5px;
+}
+
+.back-button:hover {
+    background-color: dodgerblue;
+    background-color: lightblue;
+    transform: scale(1.05);
+}
+
+.index-link {
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    text-decoration: none;
+    font-weight: lighter;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.index-link:hover {
+    background-color: dodgerblue;
+    background-color: lightblue;
+    transform: scale(1.05);
+}
+
+.content img {
+    width: 90%;
+    /* Stretch image to fill container width */
+    height: 90%;
+    /* Stretch image to fill container height */
+    object-fit: cover;
+    /* Maintain aspect ratio, cover container */
+    border-style: solid;
+    border-width: 1px;
+}
