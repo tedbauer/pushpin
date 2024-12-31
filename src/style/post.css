@@ -20,6 +20,36 @@ body {
     font-size: 80%;
 }
 
+#postNavbar {
+    top: 100px;
+    position: sticky;
+    font-family: 'Merriweather', serif;
+    font-size: 80%;
+    width: 200px;
+    border-width: 1px;
+}
+
+#postNavbar li:hover {
+    background-color: #eee;
+    transform: scale(1.05);
+}
+
+#postNavbar li {
+    list-style: none;
+    margin: 5px 0;
+    cursor: pointer;
+    padding: 2px;
+    text-align: left;
+    /* Adjust this value as needed */
+    transition: all 0.2s ease;
+}
+
+#postNavbar li.active {
+    background-color: #228B22;
+    color: #fff;
+    font-weight: bold;
+}
+
 @media only screen and (max-width: 767px) {
     .toplevel {
         padding: 20px;
@@ -41,7 +71,7 @@ body {
 .toplevel {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 50px;
     position: relative;
 }
