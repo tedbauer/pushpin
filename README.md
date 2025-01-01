@@ -1,6 +1,6 @@
 # Pushpin
 
-A simple static site generator that I use to generate my [personal website](tedbauer.github.io).
+A simple static site generator that I use to generate my [personal website](https://www.polarbeardomestication.net/).
 
 ## Installation
 
