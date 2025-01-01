@@ -117,3 +117,13 @@ body {
     border-style: solid;
     border-width: 1px;
 }
+
+.zoomable {
+    transition: transform 0.3s ease;
+}
+
+.zoomable:hover {
+    transform: scale(3);
+    /* Optional: ensure zoomed elements appear on top */
+    z-index: 1;
+}
