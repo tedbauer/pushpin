@@ -35,7 +35,24 @@
         // Create list elements for each header
         headers.forEach(header => {
             const listItem = document.createElement('li');
-            listItem.textContent = header.textContent;
+
+            // Special handling for h3 elements
+            if (header.tagName.toLowerCase() === 'h3') {
+                // Create bullet point
+                const bullet = document.createElement('span');
+                bullet.textContent = '•';
+                bullet.style.marginRight = '8px';
+                listItem.appendChild(bullet);
+
+                // Create text span with gray color
+                const textSpan = document.createElement('span');
+                textSpan.textContent = header.textContent;
+                textSpan.style.color = '#666'; // Gray color
+                listItem.appendChild(textSpan);
+            } else {
+                listItem.textContent = header.textContent;
+            }
+
             listItem.addEventListener('click', (e) => {
                 // Immediately set this header as active when clicked
                 header.scrollIntoView();
@@ -109,7 +126,6 @@
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(onScroll, 10);
         }, { passive: true });
-
     </script>
     </body>
 </html>
