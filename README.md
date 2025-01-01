@@ -1,6 +1,6 @@
 # Pushpin
 
-A simple static site generator.
+A simple static site generator that I use to generate my [personal website](tedbauer.github.io).
 
 ## Installation
 
@@ -29,4 +29,6 @@ posts:
     path: posts/notes3.md
 ```
 
-In the same directory, just run `pushpin`.
+In the same directory, run `pushpin`. It will generate:
+- an `index.html` in the same directory
+- a directory of blog post HTML files in `pages/`
