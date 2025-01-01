@@ -8,20 +8,16 @@ body {
     margin: 20px;
     padding: 25px;
     position: relative;
-
     border-radius: 20px;
     border-width: 1px;
     border-color: black;
     border-style: solid;
-
     box-shadow: black 5px 5px;
-
     font-family: 'Merriweather', serif;
     font-size: 80%;
 }
 
 #postNavbar {
-    z-index: -50;
     top: 100px;
     position: sticky;
     font-family: 'Merriweather', serif;
@@ -33,6 +29,8 @@ body {
 #postNavbar li:hover {
     background-color: #eee;
     transform: scale(1.05);
+    position: relative;
+    /* Add this to create stacking context */
 }
 
 #postNavbar li {
@@ -41,7 +39,6 @@ body {
     cursor: pointer;
     padding: 2px;
     text-align: left;
-    /* Adjust this value as needed */
     transition: all 0.2s ease;
 }
 
@@ -121,20 +118,17 @@ body {
 
 .zoomable {
     transition: transform 0.3s ease;
-    z-index: 100;
+    position: relative;
 }
 
 .zoomable:hover {
     transform: scale(3);
-    /* Optional: ensure zoomed elements appear on top */
-    z-index: 10000;
+    z-index: 1000;
+    /* High enough to be above everything */
 }
 
 #postNavbar li.h3-item {
     padding: 2px;
-
-    /* Minimal top/bottom padding, keep small left/right padding */
     color: #666;
     margin-left: 8px;
-    /* Use margin for the indentation instead */
 }

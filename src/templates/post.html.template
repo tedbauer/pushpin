@@ -28,6 +28,7 @@
         <div id="postNavbar"></div>
         </div>
     <script>
+
         hljs.highlightAll();
         const postNavbar = document.getElementById('postNavbar');
         const headers = document.querySelectorAll('h2, h3, h4, h5, h6');
@@ -38,17 +39,8 @@
 
             // Special handling for h3 elements
             if (header.tagName.toLowerCase() === 'h3') {
-                // Create bullet point
-                const bullet = document.createElement('span');
-                bullet.textContent = '•';
-                bullet.style.marginRight = '8px';
-                listItem.appendChild(bullet);
-
-                // Create text span with gray color
-                const textSpan = document.createElement('span');
-                textSpan.textContent = header.textContent;
-                textSpan.style.color = '#666'; // Gray color
-                listItem.appendChild(textSpan);
+                listItem.textContent = header.textContent;
+                listItem.classList.add('h3-item');
             } else {
                 listItem.textContent = header.textContent;
             }
