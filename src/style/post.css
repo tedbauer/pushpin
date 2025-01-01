@@ -21,6 +21,7 @@ body {
 }
 
 #postNavbar {
+    z-index: -50;
     top: 100px;
     position: sticky;
     font-family: 'Merriweather', serif;
@@ -46,7 +47,7 @@ body {
 
 #postNavbar li.active {
     background-color: #228B22;
-    color: #fff;
+    color: #fff !important;
     font-weight: bold;
 }
 
@@ -120,10 +121,20 @@ body {
 
 .zoomable {
     transition: transform 0.3s ease;
+    z-index: 100;
 }
 
 .zoomable:hover {
     transform: scale(3);
     /* Optional: ensure zoomed elements appear on top */
-    z-index: 1;
+    z-index: 10000;
+}
+
+#postNavbar li.h3-item {
+    padding: 2px;
+
+    /* Minimal top/bottom padding, keep small left/right padding */
+    color: #666;
+    margin-left: 8px;
+    /* Use margin for the indentation instead */
 }
