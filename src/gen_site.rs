@@ -9,14 +9,21 @@ use pulldown_cmark::Alignment;
 use pulldown_cmark::CowStr;
 use pulldown_cmark::DefaultBrokenLinkCallback;
 use pulldown_cmark::Event;
+use pulldown_cmark::MetadataBlockKind;
 use pulldown_cmark::Options;
 use pulldown_cmark::Parser;
 use pulldown_cmark::Tag;
 use pulldown_cmark::TagEnd;
 use pulldown_cmark::TextMergeStream;
+use serde::Deserialize;
 use tera::Tera;
 
-fn push_toc(iter: &mut Vec<Event>, config: Config) -> () {
+#[derive(Deserialize, Debug)]
+struct PageMetadata {
+    template: String,
+}
+
+fn push_toc(iter: &mut Vec<Event>, config: Config) {
     iter.push(Event::Start(Tag::Table(vec![Alignment::Left; 2])));
     for post in config.posts {
         let post_name = post.name;
@@ -67,7 +74,6 @@ fn expand_macros<'a>(
 
 fn generate_page(
     markdown: &str,
-    template_name: &str,
     tera: &Tera,
     config: &Config,
     source_path: &str,
@@ -75,11 +81,12 @@ fn generate_page(
 ) -> Result<String> {
     let mut options = pulldown_cmark::Options::empty();
     options.insert(Options::ENABLE_TABLES);
-    let iterator = TextMergeStream::new(Parser::new_ext(&markdown, options));
-    let html_content = expand_macros(iterator, &config).and_then(|events| {
+    options.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
+    let iterator = TextMergeStream::new(Parser::new_ext(markdown, options));
+    let html_content = expand_macros(iterator, config).map(|events| {
         let mut html_output = String::new();
         pulldown_cmark::html::push_html(&mut html_output, events.into_iter());
-        Ok(html_output)
+        html_output
     })?;
 
     let mut context = tera::Context::new();
@@ -87,14 +94,13 @@ fn generate_page(
     context.insert("title", title);
     context.insert("path", source_path);
 
-    tera.render(template_name, &context)
+    tera.render(source_path, &context)
         .map_err(|err| anyhow!("tera render failed: {err}"))
 }
 
 fn write_page(
     markdown_path: &str,
     target_path: &str,
-    template_name: &str,
     tera: &Tera,
     config: &Config,
     source_path: &str,
@@ -104,53 +110,75 @@ fn write_page(
     let mut markdown_content = String::new();
     markdown_file?.read_to_string(&mut markdown_content)?;
 
-    let rendered_html = generate_page(
-        &markdown_content,
-        template_name,
-        tera,
-        config,
-        source_path,
-        title,
-    )?;
+    let rendered_html = generate_page(&markdown_content, tera, config, source_path, title)?;
 
     let mut target_file = File::create(target_path).unwrap();
     write!(target_file, "{}", rendered_html).map_err(|err| anyhow!("error: {err}"))
 }
 
-fn load_templates() -> Result<Tera> {
-    let mut tera = Tera::new("templates/**/*")?;
+fn read_metadata(markdown_path: &str) -> Result<Option<PageMetadata>> {
+    let mut markdown_string = String::new();
+    println!("tryna open {:?}", format!("pages/{markdown_path}"));
+    let markdown_file = File::open(format!("pages/{markdown_path}"));
+    let _ = markdown_file?.read_to_string(&mut markdown_string);
 
-    let index_template = include_str!("templates/index.html.template");
-    tera.add_raw_template("index", &index_template)?;
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
+    let parser = Parser::new_ext(&markdown_string, options);
 
-    let post_template = include_str!("templates/post.html.template");
-    tera.add_raw_template("post", &post_template)?;
+    let mut in_metadata = false;
+    for event in parser {
+        match event {
+            Event::Start(Tag::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
+                in_metadata = true;
+            }
+            Event::Text(text) => {
+                if in_metadata {
+                    let metadata = serde_yaml::from_str::<PageMetadata>(&text)?;
+                    return Ok(Some(metadata));
+                }
+            }
+            Event::End(TagEnd::MetadataBlock(MetadataBlockKind::YamlStyle)) => return Ok(None),
+            _ => continue,
+        }
+    }
+
+    Ok(None)
+}
+
+fn load_templates(config: &Config) -> Result<Tera> {
+    let mut pages_metadata: Vec<(String, PageMetadata)> = Vec::new();
+
+    let homepage_metadata = read_metadata(&config.homepage)?;
+    if let Some(metadata) = homepage_metadata {
+        pages_metadata.push((config.homepage.clone(), metadata));
+    }
+
+    for post in &config.posts {
+        if let Some(metadata) = read_metadata(&post.path)? {
+            pages_metadata.push((post.path.clone(), metadata));
+        }
+    }
+
+    let mut tera = Tera::default();
+    for page_metadata in pages_metadata {
+        let mut template = String::new();
+        println!("tryna open {:?}", page_metadata.1.template);
+        let mut template_file = File::open(format!("templates/{}", page_metadata.1.template))?;
+        template_file.read_to_string(&mut template)?;
+
+        tera.add_raw_template(page_metadata.0.as_str(), template.as_str())?;
+    }
 
     Ok(tera)
 }
 
 pub(crate) fn generate(config: &Config) -> Result<usize> {
-    let tera = load_templates()?;
-
-    fs::create_dir_all("style")?;
-    fs::create_dir_all("images")?;
-
-    let stylesheet_home = include_str!("style/stylesheet.css");
-    let mut stylesheet_home_file = File::create("style/stylesheet.css")?;
-    write!(stylesheet_home_file, "{}", stylesheet_home)?;
-
-    let stylesheet_post = include_str!("style/post.css");
-    let mut stylesheet_post_file = File::create("style/post.css")?;
-    write!(stylesheet_post_file, "{}", stylesheet_post)?;
-
-    let back_arrow_image = include_bytes!("images/back.png");
-    let back_arrow_file = File::create("images/back.png");
-    back_arrow_file?.write_all(back_arrow_image)?;
+    let tera = load_templates(config)?;
 
     write_page(
         &config.homepage,
         "index.html",
-        "index",
         &tera,
         config,
         &config.homepage,
@@ -164,7 +192,6 @@ pub(crate) fn generate(config: &Config) -> Result<usize> {
         write_page(
             &post.path,
             format!("posts/{name}.html").as_str(),
-            "post",
             &tera,
             config,
             &post.path,

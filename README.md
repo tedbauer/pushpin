@@ -10,7 +10,22 @@ cargo build --release && alias pushpin=$(pwd)/target/release/pushpin
 
 ## Usage
 
-Configure a site with a `PUSHPIN.yaml`:
+Create a folder for your site, structured like this:
+
+```
+pages/
+  notes1.md
+  notes2.md
+templates/
+  index.html
+  post.html
+style/
+  index.css
+  post.css
+PUSHPIN.yaml
+```
+
+Configure `PUSHPIN.yaml` like this:
 
 ```
 # PUSHPIN.yaml
@@ -29,6 +44,7 @@ posts:
     path: posts/notes3.md
 ```
 
-In the same directory, run `pushpin`. It will generate:
+Run `pushpin`. It will generate:
+
 - an `index.html` in the same directory
 - a directory of blog post HTML files in `pages/`

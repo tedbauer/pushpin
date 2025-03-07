@@ -45,7 +45,7 @@ fn main() -> Result<(), std::io::Error> {
 
     let yaml_loader = YamlLoader::load_from_str(&contents).unwrap();
     let yaml_doc = &yaml_loader[0];
-    let config = parse_config(&yaml_doc);
+    let config = parse_config(yaml_doc);
 
     match gen_site::generate(&config) {
         Ok(num_files_generated) => println!("Success: generated {num_files_generated} files."),
