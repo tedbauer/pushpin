@@ -5,6 +5,25 @@ use yaml_rust::{Yaml, YamlLoader};
 
 mod gen_site;
 
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    #[command(name = "init", alias = "initialize")]
+    Init {
+        #[arg()]
+        title: Option<String>,
+    },
+    Generate,
+}
+
 #[derive(Debug, Clone)]
 struct Post {
     title: String,
@@ -39,18 +58,35 @@ fn parse_config(yaml_doc: &Yaml) -> Config {
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let mut config_file = File::open("PUSHPIN.yaml")?;
-    let mut contents = String::new();
-    config_file.read_to_string(&mut contents)?;
+    let cli = Cli::parse();
 
-    let yaml_loader = YamlLoader::load_from_str(&contents).unwrap();
-    let yaml_doc = &yaml_loader[0];
-    let config = parse_config(yaml_doc);
+    match &cli.command {
+        Commands::Init { title } => match gen_site::initialize(title.clone()) {
+            Ok(_) => {
+                if let Some(t) = title {
+                    println!("📌 success: initialized new site '{t}'");
+                } else {
+                    println!("📌 success: initialized new site");
+                }
+            }
+            Err(err) => println!("Error: {err}"),
+        },
+        Commands::Generate => {
+            let mut config_file = File::open("PUSHPIN.yaml")?;
+            let mut contents = String::new();
+            config_file.read_to_string(&mut contents)?;
 
-    match gen_site::generate(&config) {
-        Ok(num_files_generated) => println!("Success: generated {num_files_generated} files."),
-        Err(err) => println!("Error: {err}"),
-    };
+            let yaml_loader = YamlLoader::load_from_str(&contents).unwrap();
+            let yaml_doc = &yaml_loader[0];
+            let config = parse_config(yaml_doc);
 
+            match gen_site::generate(&config) {
+                Ok(num_files_generated) => {
+                    println!("📌 success: generated {num_files_generated} files.")
+                }
+                Err(err) => println!("Error: {err}"),
+            };
+        }
+    }
     Ok(())
 }

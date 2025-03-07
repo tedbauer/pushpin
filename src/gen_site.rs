@@ -118,7 +118,6 @@ fn write_page(
 
 fn read_metadata(markdown_path: &str) -> Result<Option<PageMetadata>> {
     let mut markdown_string = String::new();
-    println!("tryna open {:?}", format!("pages/{markdown_path}"));
     let markdown_file = File::open(format!("pages/{markdown_path}"));
     let _ = markdown_file?.read_to_string(&mut markdown_string);
 
@@ -163,7 +162,6 @@ fn load_templates(config: &Config) -> Result<Tera> {
     let mut tera = Tera::default();
     for page_metadata in pages_metadata {
         let mut template = String::new();
-        println!("tryna open {:?}", page_metadata.1.template);
         let mut template_file = File::open(format!("templates/{}", page_metadata.1.template))?;
         template_file.read_to_string(&mut template)?;
 
@@ -171,6 +169,67 @@ fn load_templates(config: &Config) -> Result<Tera> {
     }
 
     Ok(tera)
+}
+
+const INITIAL_INDEX_MD: &str = r#"---
+template: index.html
+---
+
+# mysite
+
+Welcome to my new site!
+
+[[ListPosts]]
+"#;
+
+const INITIAL_POST_MD: &str = r#"---
+template: post.html
+---
+
+This is an example post.
+
+"#;
+
+const INITIAL_INDEX_TEMPLATE: &str = "<!DOCTYPE html><head></head><body>{{content}}</body></html>";
+const INITIAL_POST_TEMPLATE: &str = "<!DOCTYPE html><head></head><body>{{content}}</body></html>";
+
+const INITIAL_CONFIG: &str = r#"homepage: index.md
+
+posts:
+  - title: 'Example post'
+    date: 05-05-2024
+    path: posts/notes1.md
+    name: post1
+        "#;
+
+pub(crate) fn initialize(title: Option<String>) -> Result<()> {
+    let mut root: String = "".to_string();
+    if let Some(t) = title {
+        fs::create_dir_all(t.clone())?;
+        root = format!("{t}/");
+    }
+    fs::create_dir_all(format!("{root}pages"))?;
+    fs::create_dir_all(format!("{root}pages/posts"))?;
+    let mut index_md = File::create(format!("{root}pages/index.md"))?;
+    let mut post_md = File::create(format!("{root}pages/posts/notes1.md"))?;
+
+    index_md.write_all(INITIAL_INDEX_MD.as_bytes())?;
+    post_md.write_all(INITIAL_POST_MD.as_bytes())?;
+
+    fs::create_dir_all(format!("{root}templates"))?;
+    let mut index_template = File::create(format!("{root}templates/index.html"))?;
+    let mut post_template = File::create(format!("{root}templates/post.html"))?;
+    index_template.write_all(INITIAL_INDEX_TEMPLATE.as_bytes())?;
+    post_template.write_all(INITIAL_POST_TEMPLATE.as_bytes())?;
+
+    fs::create_dir_all(format!("{root}style"))?;
+    File::create(format!("{root}style/index.css"))?;
+    File::create(format!("{root}style/post.css"))?;
+
+    let mut config = File::create(format!("{root}PUSHPIN.yaml"))?;
+    config.write_all(INITIAL_CONFIG.as_bytes())?;
+
+    Ok(())
 }
 
 pub(crate) fn generate(config: &Config) -> Result<usize> {
