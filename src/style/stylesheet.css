@@ -2,6 +2,15 @@ body {
     background-color: #edfff3;
 }
 
+.footer {
+    margin-top: -15px;
+    font-family: 'Merriweather', serif;
+    font-size: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .card {
     background-color: white;
     width: 380px;
@@ -23,6 +32,7 @@ body {
 @media only screen and (max-width: 767px) {
     .toplevel {
         padding: 20px;
+        flex-direction: column;
     }
 
     .card {
@@ -44,6 +54,7 @@ body {
     align-items: center;
     padding: 50px;
     position: relative;
+    flex-direction: column;
 }
 
 .back-button {
