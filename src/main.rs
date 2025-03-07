@@ -1,9 +1,11 @@
 use std::fs::File;
 use std::io::Read;
 
+use anyhow::Result;
 use yaml_rust::{Yaml, YamlLoader};
 
 mod gen_site;
+mod serve;
 
 use clap::{Parser, Subcommand};
 
@@ -22,6 +24,7 @@ enum Commands {
         title: Option<String>,
     },
     Generate,
+    Serve,
 }
 
 #[derive(Debug, Clone)]
@@ -57,6 +60,25 @@ fn parse_config(yaml_doc: &Yaml) -> Config {
     Config { homepage, posts }
 }
 
+fn gen() -> Result<()> {
+    let mut config_file = File::open("PUSHPIN.yaml")?;
+    let mut contents = String::new();
+    config_file.read_to_string(&mut contents)?;
+
+    let yaml_loader = YamlLoader::load_from_str(&contents).unwrap();
+    let yaml_doc = &yaml_loader[0];
+    let config = parse_config(yaml_doc);
+
+    match gen_site::generate(&config) {
+        Ok(num_files_generated) => {
+            println!("📌 success: generated site; created {num_files_generated} files")
+        }
+        Err(err) => println!("Error: {err}"),
+    };
+
+    Ok(())
+}
+
 fn main() -> Result<(), std::io::Error> {
     let cli = Cli::parse();
 
@@ -72,20 +94,11 @@ fn main() -> Result<(), std::io::Error> {
             Err(err) => println!("Error: {err}"),
         },
         Commands::Generate => {
-            let mut config_file = File::open("PUSHPIN.yaml")?;
-            let mut contents = String::new();
-            config_file.read_to_string(&mut contents)?;
-
-            let yaml_loader = YamlLoader::load_from_str(&contents).unwrap();
-            let yaml_doc = &yaml_loader[0];
-            let config = parse_config(yaml_doc);
-
-            match gen_site::generate(&config) {
-                Ok(num_files_generated) => {
-                    println!("📌 success: generated {num_files_generated} files.")
-                }
-                Err(err) => println!("Error: {err}"),
-            };
+            let _ = gen();
+        }
+        Commands::Serve => {
+            let _ = gen();
+            serve::serve();
         }
     }
     Ok(())
