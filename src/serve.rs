@@ -27,8 +27,9 @@ fn handle_connection(mut stream: TcpStream) {
 
         if index_path.exists() {
             let contents = fs::read_to_string(index_path).unwrap();
+            // Added Content-Type header to specify UTF-8 encoding
             let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{}",
+                "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
                 contents.len(),
                 contents
             );
@@ -54,8 +55,9 @@ fn handle_connection(mut stream: TcpStream) {
 
         if requested_file_path.exists() {
             let contents = fs::read_to_string(requested_file_path).unwrap();
+            // Added Content-Type header to specify UTF-8 encoding
             let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{}",
+                "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\n\r\n{}",
                 contents.len(),
                 contents
             );

@@ -2,6 +2,7 @@ use std::fs;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use std::path::PathBuf;
 
 use crate::Config;
 use anyhow::{anyhow, Result};
@@ -16,6 +17,7 @@ use pulldown_cmark::Tag;
 use pulldown_cmark::TagEnd;
 use pulldown_cmark::TextMergeStream;
 use serde::Deserialize;
+use serde::Serialize;
 use tera::Tera;
 
 #[derive(Deserialize, Debug)]
@@ -26,7 +28,6 @@ struct PageMetadata {
 fn push_toc(iter: &mut Vec<Event>, config: Config) {
     iter.push(Event::Start(Tag::Table(vec![Alignment::Left; 2])));
     for post in config.posts {
-        let post_name = post.name;
         let date_string = post.date.replace("-", "/");
 
         iter.push(Event::Start(Tag::TableRow));
@@ -41,8 +42,8 @@ fn push_toc(iter: &mut Vec<Event>, config: Config) {
         iter.push(Event::Start(Tag::TableCell));
         iter.push(Event::Html(
             format!(
-                r#"<a class="index-link" href="posts/{post_name}.html">{post_title}</a>"#,
-                post_name = post_name,
+                r#"<a class="index-link" href="{}">{post_title}</a>"#,
+                post.path.replace("md", "html"),
                 post_title = post.title
             )
             .into(),
@@ -76,8 +77,9 @@ fn generate_page(
     markdown: &str,
     tera: &Tera,
     config: &Config,
-    source_path: &str,
+    template_name: Option<String>,
     title: &str,
+    context: &tera::Context,
 ) -> Result<String> {
     let mut options = pulldown_cmark::Options::empty();
     options.insert(Options::ENABLE_TABLES);
@@ -89,36 +91,45 @@ fn generate_page(
         html_output
     })?;
 
-    let mut context = tera::Context::new();
+    let mut context = tera::Context::from(context.clone());
     context.insert("content", &html_content);
     context.insert("title", title);
-    context.insert("path", source_path);
+    context.insert("path", "hello");
 
-    tera.render(source_path, &context)
-        .map_err(|err| anyhow!("tera render failed: {err}"))
+    if let Some(template_name) = template_name {
+        tera.render(&template_name, &context)
+            .map_err(|err| anyhow!("tera render failed: {err}"))
+    } else {
+        Ok(html_content)
+    }
 }
 
 fn write_page(
-    markdown_path: &str,
-    target_path: &str,
+    markdown_content: &str,
+    target_path: &PathBuf,
     tera: &Tera,
     config: &Config,
-    source_path: &str,
+    template_name: Option<String>,
     title: &str,
+    context: &tera::Context,
 ) -> Result<()> {
-    let markdown_file = File::open(format!("pages/{markdown_path}"));
-    let mut markdown_content = String::new();
-    markdown_file?.read_to_string(&mut markdown_content)?;
+    let rendered_html = generate_page(
+        &markdown_content,
+        tera,
+        config,
+        template_name,
+        title,
+        context,
+    )?;
 
-    let rendered_html = generate_page(&markdown_content, tera, config, source_path, title)?;
-
+    fs::create_dir_all(target_path.parent().unwrap())?;
     let mut target_file = File::create(target_path).unwrap();
     write!(target_file, "{}", rendered_html).map_err(|err| anyhow!("error: {err}"))
 }
 
-fn read_metadata(markdown_path: &str) -> Result<Option<PageMetadata>> {
+fn read_metadata(markdown_path: &PathBuf) -> Result<Option<PageMetadata>> {
     let mut markdown_string = String::new();
-    let markdown_file = File::open(format!("pages/{markdown_path}"));
+    let markdown_file = File::open(markdown_path);
     let _ = markdown_file?.read_to_string(&mut markdown_string);
 
     let mut options = Options::empty();
@@ -148,13 +159,13 @@ fn read_metadata(markdown_path: &str) -> Result<Option<PageMetadata>> {
 fn load_templates(config: &Config) -> Result<Tera> {
     let mut pages_metadata: Vec<(String, PageMetadata)> = Vec::new();
 
-    let homepage_metadata = read_metadata(&config.homepage)?;
+    let homepage_metadata = read_metadata(&PathBuf::from(config.clone().homepage))?;
     if let Some(metadata) = homepage_metadata {
         pages_metadata.push((config.homepage.clone(), metadata));
     }
 
     for post in &config.posts {
-        if let Some(metadata) = read_metadata(&post.path)? {
+        if let Some(metadata) = read_metadata(&PathBuf::from(post.clone().path))? {
             pages_metadata.push((post.path.clone(), metadata));
         }
     }
@@ -232,32 +243,135 @@ pub(crate) fn initialize(title: Option<String>) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn generate(config: &Config) -> Result<usize> {
-    let tera = load_templates(config)?;
+#[derive(Debug, Serialize)]
+struct Page {
+    title: String,
+    template_path: Option<String>,
+    target_path: PathBuf,
+    markdown_content: String,
+}
 
-    write_page(
-        &config.homepage,
-        "index.html",
-        &tera,
-        config,
-        &config.homepage,
-        "Theodore Bauer",
-    )?;
-    let mut num_generated_files = 1;
+#[derive(Debug, Serialize)]
+struct Section {
+    title: String,
+    pages: Vec<Page>,
+    subsections: Vec<Section>,
+}
 
-    fs::create_dir_all("posts")?;
-    for post in &config.posts {
-        let name = &post.name;
-        write_page(
-            &post.path,
-            format!("posts/{name}.html").as_str(),
-            &tera,
-            config,
-            &post.path,
-            &post.title,
-        )?;
-
-        num_generated_files += 1;
+fn capitalize_string(s: &str) -> String {
+    let mut result = String::new();
+    let mut capitalize_next = true;
+    for c in s.chars() {
+        if c.is_whitespace() {
+            capitalize_next = true;
+            result.push(c);
+        } else if capitalize_next {
+            result.push(c.to_uppercase().next().unwrap_or(c));
+            capitalize_next = false;
+        } else {
+            result.push(c);
+        }
     }
-    Ok(num_generated_files)
+    return result;
+}
+
+fn parse_sections(dir: &PathBuf) -> Result<Section> {
+    let mut section = Section {
+        title: dir
+            .file_name()
+            .ok_or(anyhow!("file name error"))?
+            .to_str()
+            .map(|s| s.replace("-", " "))
+            .as_ref()
+            .map(|s| capitalize_string(s))
+            .ok_or(anyhow!("file name error"))?
+            .to_string(),
+        pages: vec![],
+        subsections: vec![],
+    };
+
+    let mut pages = vec![];
+    let mut subsections = vec![];
+
+    for entry in fs::read_dir(dir)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            let subsection = parse_sections(&path)?;
+            subsections.push(subsection);
+        } else {
+            let mut file = File::open(&path)?;
+            let mut content = String::new();
+            file.read_to_string(&mut content)?;
+
+            let metadata = read_metadata(&path)?;
+
+            let title = path
+                .with_extension("")
+                .file_name()
+                .ok_or(anyhow!("file name error"))?
+                .to_str()
+                .map(|s| capitalize_string(s))
+                .ok_or(anyhow!("file name error"))?
+                .to_string();
+            let template_path = if let Some(m) = metadata {
+                Some(m.template)
+            } else {
+                None
+            };
+
+            let target_path = path.strip_prefix("pages")?;
+            let target_path = target_path.with_extension("html");
+
+            let page = Page {
+                title,
+                template_path,
+                target_path,
+                markdown_content: content,
+            };
+
+            pages.push(page);
+        }
+    }
+
+    section.pages = pages;
+    section.subsections = subsections;
+
+    Ok(section)
+}
+
+fn generate_sections(
+    sections: &Section,
+    tera: &Tera,
+    config: &Config,
+    context: &tera::Context,
+) -> Result<usize> {
+    let mut total = 0;
+    for page in &sections.pages {
+        write_page(
+            &page.markdown_content,
+            &page.target_path,
+            tera,
+            config,
+            page.template_path.clone(),
+            &page.title,
+            context,
+        )?;
+        total += 1;
+    }
+
+    for subsection in &sections.subsections {
+        total += generate_sections(subsection, tera, config, context)?;
+    }
+
+    Ok(total)
+}
+
+pub(crate) fn generate(config: &Config) -> Result<usize> {
+    let sections = parse_sections(&PathBuf::from("pages"))?;
+    let tera = Tera::new("templates/*.html")?;
+    let mut context = tera::Context::new();
+    context.insert("sections", &sections);
+
+    generate_sections(&sections, &tera, config, &context)
 }
