@@ -32,32 +32,23 @@ struct Post {
     title: String,
     date: String,
     path: String,
-    name: String,
 }
 
 #[derive(Debug, Clone)]
 struct Config {
-    homepage: String,
     posts: Vec<Post>,
 }
 
 fn parse_config(yaml_doc: &Yaml) -> Config {
-    let homepage = yaml_doc["homepage"].as_str().unwrap().to_string();
     let mut posts = Vec::new();
     let posts_node = &yaml_doc["posts"];
     for post in posts_node.as_vec().unwrap() {
         let title = post["title"].as_str().unwrap().to_string();
         let date = post["date"].as_str().unwrap().to_string();
         let path = post["path"].as_str().unwrap().to_string();
-        let name = post["name"].as_str().unwrap().to_string();
-        posts.push(Post {
-            title,
-            date,
-            path,
-            name,
-        });
+        posts.push(Post { title, date, path });
     }
-    Config { homepage, posts }
+    Config { posts }
 }
 
 fn gen() -> Result<()> {
