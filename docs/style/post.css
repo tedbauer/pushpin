@@ -1,0 +1,16 @@
+.nav {
+    border: solid;
+    padding: 10px;
+}
+
+.content {
+    border-style: solid 1px;
+    width: 400px;
+}
+
+
+.toplevel {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}

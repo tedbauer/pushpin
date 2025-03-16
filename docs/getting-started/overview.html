@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Pushpin
+    </title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+
+
+<body>
+    <div class="toplevel">
+        <div class="nav">
+            <h1><img src="../images/pushpin_paint.png" width="50px" height="75px">Pushpin</h1>
+            
+
+            
+            
+            <h2>Getting Started</h2>
+
+            
+            <a href="../getting-started&#x2F;overview.html">
+                <h3 class="selected" >Overview</h3>
+            </a>
+            
+            <a href="../getting-started&#x2F;installation.html">
+                <h3 >Installation</h3>
+            </a>
+            
+
+            
+
+            
+            
+            
+            <h2>Deployment</h2>
+
+            
+            <a href="../deployment&#x2F;gitHub-pages.html">
+                <h3 >GitHub Pages</h3>
+            </a>
+            
+            <a href="../deployment&#x2F;raspberry-pi.html">
+                <h3 >Raspberry Pi</h3>
+            </a>
+            
+
+            
+
+            
+            
+            
+            <h2>Concepts</h2>
+
+            
+            <a href="../concepts&#x2F;templates.html">
+                <h3 >Templates</h3>
+            </a>
+            
+            <a href="../concepts&#x2F;pages.html">
+                <h3 >Pages</h3>
+            </a>
+            
+            <a href="../concepts&#x2F;sections.html">
+                <h3 >Sections</h3>
+            </a>
+            
+
+            
+
+            
+            
+        </div>
+        <div class="content">
+            <h1>Overview</h1>
+<p>Pushpin is a static site generator focused on simplicity. There are tons of great static site generators like Zola, Jekyll, Hugo, and mdBook.</p>
+<h2>Quick tour</h2>
+<p>We'll walk through creating a new site, building it, and examining its structure. Then we'll add a new page and template.</p>
+<h3>Create and examine a new site</h3>
+<p>After <a href="installation.html">installing Pushpin</a>, generate a site:</p>
+<pre><code>$ pushpin init my-new-site
+📌 success: initialized new site 'my-new-site'
+</code></pre>
+<p><code>my-new-site</code> will contain this directory structure:</p>
+<pre><code>├── PUSHPIN.yaml
+├── pages
+│   ├── index.md
+│   └── posts/example_post.md
+├── templates
+│   ├── index.html
+│   └── post.html
+├── style
+│   └── style.css
+</code></pre>
+<p><code>pages</code> contains the content of your site in Markdown files. <code>templates</code> contains <a href="https://keats.github.io/tera/docs/">Tera</a> HTML templates that your content will be rendered into. <code>style</code> contains CSS for your templates.</p>
+<p>In <code>my-new-site</code>, generate the site and serve it with a local server:</p>
+<pre><code>$ pushpin serve
+📌 success: generated site; created 0 files
+📌 local server available at http://127.0.0.1:7878
+
+Type Ctrl+C to stop.
+</code></pre>
+<p>Pushpin generates HTML files for each Markdown file in <code>pages/</code> in the site root directory. Similar to SSGs like Zola, the directory structure of the output is based on the structure of the Markdown files.</p>
+<pre><code>├── PUSHPIN.yaml
+├── pages
+│   ├── index.md
+│   └── posts/example-post.md
+├── templates
+│   ├── index.html
+│   └── post.html
+├── style
+│   └── style.css
+++ │   index.html
+++ |   pages/
+++ │   └── example_post.html
+</code></pre>
+<h3>Add a new page and template</h3>
+<p>Create a new directory in <code>pages/</code> called <code>example-section</code>, and add a Markdown file called <code>example-page.md</code> inside. Add a new template for it called <code>example_page.html</code>:</p>
+<pre><code>├── PUSHPIN.yaml
+├── pages
+│   ├── index.md
+│   ├── posts/example-post.md
+++ │   └── example-section/example-page.md
+├── templates
+│   ├── index.html
+++ │   ├── example-page.html
+│   └── post.html
+├── style
+│   └── style.css
+│   index.html
+|   posts/
+│   └── example_post.html
+</code></pre>
+<p>By adding a directory, we have created a <a href="../concepts/sections.html">Section</a>.</p>
+<p>Write some content in <code>example-page.md</code>. Associate it with its template with Frontmatter:</p>
+<pre><code>---
+template: example-page.html
+---
+
+# Example page header
+
+This is an example page.
+</code></pre>
+<p>Add this code for the template:</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;/head&gt;
+  &lt;body&gt;
+  {{ content | safe}}
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>The Markdown content is compiled to HTML, and then inserted into templates via <code>content</code>. <code>| safe</code> escapes the string for reasons. Check out the <a href="concepts/templates.html">Templates page</a> for more information.</p>
+<p>Finally, navigate to <code>http://127.0.0.1:7878/example-section/example-page.html</code> to see the generated page.</p>
+
+        </div>
+    </div>
+    <footer class="site-footer">
+        Fix a typo | Last update: 03/11/2025
+    </footer>
+</body>
+
+
+
+</html>

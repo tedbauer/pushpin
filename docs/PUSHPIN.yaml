@@ -1,0 +1,7 @@
+homepage: index.md
+
+posts:
+  - title: 'Example post'
+    date: 05-05-2024
+    path: posts/notes1.md
+    name: post1

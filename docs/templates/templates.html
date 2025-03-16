@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Pushpin
+    </title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <div class="toplevel">
+        <div class="nav">
+            <div class="headerbox">
+                <h1><img src="../images/pushpin_paint.png" width="50px" height="75px"><a
+                        href="../index.html">Pushpin</a></h1>
+                <a href="https://github.com/tedbauer/pushpin"><img src="../images/github-mark.png" width="25px"
+                        height="25px" />GitHub</a>
+            </div>
+            {% macro render_section(section, selected) %}
+            <h2>{{ section.title }}</h2>
+
+            {% for page in section.pages %}
+            <div class="pages-nav">
+                <a href="../{{ page.target_path }}">
+                    <div {% if page.title==selected %} class="pages-nav-selected" {% else %}
+                        class="pages-nav-not-selected" {% endif %}>{{page.title}}</div>
+                </a>
+            </div>
+            {% endfor %}
+
+            {% if section.subsections %}
+            <ul>
+                {% for subsection in section.subsections %}
+                {{ self::render_section(section=subsection) }}
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% endmacro render_section %}
+
+            {% for subsection in sections.subsections %}
+            {{ self::render_section(section=subsection, selected="Templates") }}
+            {% endfor %}
+        </div>
+
+        <div class="content">
+            {{content | safe}}
+        </div>
+    </div>
+</body>
+
+</html>

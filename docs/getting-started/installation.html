@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Pushpin
+    </title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+
+
+<body>
+    <div class="toplevel">
+        <div class="nav">
+            <h1><img src="../images/pushpin_paint.png" width="50px" height="75px">Pushpin</h1>
+            
+
+            
+            
+            <h2>Getting Started</h2>
+
+            
+            <a href="../getting-started&#x2F;overview.html">
+                <h3 >Overview</h3>
+            </a>
+            
+            <a href="../getting-started&#x2F;installation.html">
+                <h3 class="selected" >Installation</h3>
+            </a>
+            
+
+            
+
+            
+            
+            
+            <h2>Deployment</h2>
+
+            
+            <a href="../deployment&#x2F;gitHub-pages.html">
+                <h3 >GitHub Pages</h3>
+            </a>
+            
+            <a href="../deployment&#x2F;raspberry-pi.html">
+                <h3 >Raspberry Pi</h3>
+            </a>
+            
+
+            
+
+            
+            
+            
+            <h2>Concepts</h2>
+
+            
+            <a href="../concepts&#x2F;templates.html">
+                <h3 >Templates</h3>
+            </a>
+            
+            <a href="../concepts&#x2F;pages.html">
+                <h3 >Pages</h3>
+            </a>
+            
+            <a href="../concepts&#x2F;sections.html">
+                <h3 >Sections</h3>
+            </a>
+            
+
+            
+
+            
+            
+        </div>
+        <div class="content">
+            <h1>Installation</h1>
+<p>Pushpin is written in Rust. Install it, then clone the repo, build it, and create an alias.</p>
+<pre><code>git clone https://github.com/tedbauer/pushpin
+cd pushpin
+cargo build --release &amp;&amp; alias pushpin=$(pwd)/target/release/pushpin
+</code></pre>
+
+        </div>
+    </div>
+</body>
+
+
+
+</html>
