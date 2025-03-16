@@ -1,0 +1,49 @@
+name: Generate site and push to GitHub pages branch
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  generate_and_commit:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Clone pushpin
+        uses: actions/checkout@v3
+        with:
+          repository: tedbauer/pushpin
+          ref: master
+          path: cloned-repo
+
+      - name: Build, install, and run Pushpin
+        working-directory: cloned-repo
+        run: |
+          cargo build --release
+          PUSHPIN_PATH=$(pwd)/target/release/pushpin
+          echo "PUSHPIN_PATH=$PUSHPIN_PATH" >> $GITHUB_ENV
+          cd ..
+          $PUSHPIN_PATH generate
+
+      - name: Remove pushpin local clone
+        run: rm -rf cloned-repo
+
+      - name: Commit changes and push
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git checkout -b gh-pages
+          git commit -m "Automated file generation"
+          git push https://${{ secrets.ACCESS_TOKEN }}@github.com/tedbauer/pushpin HEAD:gh-pages --force
