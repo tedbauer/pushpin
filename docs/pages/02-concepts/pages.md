@@ -44,7 +44,7 @@ After running `pushpin generate` or `pushpin serve`, these files will be generat
       - bar-page.html
 ```
 
-Note that this setup creates two [Sections](sections.html).
+Note that this setup creates two [Sections](sections.html) named `Foo` and `Bar`.
 
 The resulting HTML paths can be used in Markdown links. For example, `foo-page.md` could link to `index.md` like this:
 
