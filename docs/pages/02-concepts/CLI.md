@@ -4,7 +4,7 @@ template: cli.html
 
 # Pushpin CLI
 
-The CLI supports two commands:
+The CLI supports these commands:
 
 - `pushpin init <sitename>`: generate skeleton files for a brand new site in a new directory, `<sitename>`.
   - You can omit `<sitename>`, and the site files will be created in the current working directory.
