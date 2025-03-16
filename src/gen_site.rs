@@ -75,6 +75,7 @@ fn expand_macros<'a>(
 
 fn generate_page(
     markdown: &str,
+    markdown_path: &str,
     tera: &Tera,
     config: &Config,
     template_name: Option<String>,
@@ -91,14 +92,16 @@ fn generate_page(
         html_output
     })?;
 
-    let mut context = tera::Context::from(context.clone());
+    let mut context = context.clone();
     context.insert("content", &html_content);
     context.insert("title", title);
     context.insert("path", "hello");
 
+    // TODO: if a template is not found, we need a more helpful error message.
     if let Some(template_name) = template_name {
-        tera.render(&template_name, &context)
-            .map_err(|err| anyhow!("tera render failed: {err}"))
+        tera.render(&template_name, &context).map_err(|err| {
+            anyhow!("Failed to render Tera template '{template_name}' for '{markdown_path}': {err}")
+        })
     } else {
         Ok(html_content)
     }
@@ -106,6 +109,7 @@ fn generate_page(
 
 fn write_page(
     markdown_content: &str,
+    markdown_path: &str,
     target_path: &PathBuf,
     tera: &Tera,
     config: &Config,
@@ -114,7 +118,8 @@ fn write_page(
     context: &tera::Context,
 ) -> Result<()> {
     let rendered_html = generate_page(
-        &markdown_content,
+        markdown_content,
+        markdown_path,
         tera,
         config,
         template_name,
@@ -154,32 +159,6 @@ fn read_metadata(markdown_path: &PathBuf) -> Result<Option<PageMetadata>> {
     }
 
     Ok(None)
-}
-
-fn load_templates(config: &Config) -> Result<Tera> {
-    let mut pages_metadata: Vec<(String, PageMetadata)> = Vec::new();
-
-    let homepage_metadata = read_metadata(&PathBuf::from(config.clone().homepage))?;
-    if let Some(metadata) = homepage_metadata {
-        pages_metadata.push((config.homepage.clone(), metadata));
-    }
-
-    for post in &config.posts {
-        if let Some(metadata) = read_metadata(&PathBuf::from(post.clone().path))? {
-            pages_metadata.push((post.path.clone(), metadata));
-        }
-    }
-
-    let mut tera = Tera::default();
-    for page_metadata in pages_metadata {
-        let mut template = String::new();
-        let mut template_file = File::open(format!("templates/{}", page_metadata.1.template))?;
-        template_file.read_to_string(&mut template)?;
-
-        tera.add_raw_template(page_metadata.0.as_str(), template.as_str())?;
-    }
-
-    Ok(tera)
 }
 
 const INITIAL_INDEX_MD: &str = r#"---
@@ -249,6 +228,7 @@ struct Page {
     template_path: Option<String>,
     target_path: PathBuf,
     markdown_content: String,
+    markdown_path: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -256,6 +236,7 @@ struct Section {
     title: String,
     pages: Vec<Page>,
     subsections: Vec<Section>,
+    order: usize,
 }
 
 fn capitalize_string(s: &str) -> String {
@@ -272,15 +253,46 @@ fn capitalize_string(s: &str) -> String {
             result.push(c);
         }
     }
-    return result;
+    result
+}
+
+fn parse_order_from_pathbuf(path: &PathBuf) -> Option<usize> {
+    if let Some(file_name) = path.file_name() {
+        if let Some(file_str) = file_name.to_str() {
+            if let Some(dash_index) = file_str.find('-') {
+                if dash_index > 0 {
+                    let prefix = &file_str[..dash_index];
+                    if let Ok(number) = prefix.parse::<usize>() {
+                        return Some(number);
+                    }
+                }
+            }
+        }
+    }
+    None
 }
 
 fn parse_sections(dir: &PathBuf) -> Result<Section> {
+    // If the dir starts with an integer followed by a -, assume that the integer is the order.
+    let order = parse_order_from_pathbuf(dir).unwrap_or(0);
+
     let mut section = Section {
         title: dir
             .file_name()
             .ok_or(anyhow!("file name error"))?
             .to_str()
+            .map(|s| {
+                if let Some(dash_index) = s.find('-') {
+                    if dash_index > 0 {
+                        let prefix = &s[..dash_index];
+                        if prefix.parse::<u32>().is_ok() {
+                            return s[dash_index + 1..].to_string();
+                        }
+                    }
+                }
+                s.to_string()
+            })
+            .as_ref()
             .map(|s| s.replace("-", " "))
             .as_ref()
             .map(|s| capitalize_string(s))
@@ -288,7 +300,10 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
             .to_string(),
         pages: vec![],
         subsections: vec![],
+        order,
     };
+
+    println!("Parsing section: {} with order={order}", section.title);
 
     let mut pages = vec![];
     let mut subsections = vec![];
@@ -311,7 +326,7 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
                 .file_name()
                 .ok_or(anyhow!("file name error"))?
                 .to_str()
-                .map(|s| capitalize_string(s))
+                .map(|s| capitalize_string(&s.replace("-", " ")))
                 .ok_or(anyhow!("file name error"))?
                 .to_string();
             let template_path = if let Some(m) = metadata {
@@ -328,6 +343,7 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
                 template_path,
                 target_path,
                 markdown_content: content,
+                markdown_path: path.to_str().ok_or(anyhow!("file name error"))?.to_string(),
             };
 
             pages.push(page);
@@ -336,6 +352,11 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
 
     section.pages = pages;
     section.subsections = subsections;
+    section.subsections.sort_by(|a, b| a.order.cmp(&b.order));
+    println!("After sorting, heres the order of subsections:");
+    for section in &section.subsections {
+        println!("{}: {}", section.title, section.order);
+    }
 
     Ok(section)
 }
@@ -350,6 +371,7 @@ fn generate_sections(
     for page in &sections.pages {
         write_page(
             &page.markdown_content,
+            &page.markdown_path,
             &page.target_path,
             tera,
             config,
