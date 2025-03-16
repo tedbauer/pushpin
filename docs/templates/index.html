@@ -4,7 +4,7 @@
     <title>
         Pushpin
     </title>
-    <link rel="stylesheet" href="../style/index.css">
+    <link rel="stylesheet" href="style/index.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
         rel="stylesheet">
@@ -25,8 +25,8 @@
     <div class="toplevel">
         <div class="nav">
             <div class="headerbox">
-                <h1><img src="../images/pushpin_paint.png" width="50px" height="75px"><a href=".">Pushpin</a></h1>
-                <a href="https://github.com/tedbauer/pushpin"><img src="../images/github-mark.png" width="25px"
+                <h1><img src="images/pushpin_paint.png" width="50px" height="75px"><a href=".">Pushpin</a></h1>
+                <a href="https://github.com/tedbauer/pushpin"><img src="images/github-mark.png" width="25px"
                         height="25px" />GitHub</a>
             </div>
             {% macro render_section(section, selected) %}
@@ -34,7 +34,7 @@
 
             {% for page in section.pages %}
             <div class="pages-nav">
-                <a href="../{{ page.target_path }}">
+                <a href="{{ page.target_path }}">
                     <div {% if page.title==selected %} class="pages-nav-selected" {% else %}
                         class="pages-nav-not-selected" {% endif %}>{{page.title}}</div>
                 </a>
