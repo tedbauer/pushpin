@@ -36,6 +36,7 @@ jobs:
       - name: Build, install, and run Pushpin
         working-directory: cloned-repo
         run: |
+          ls
           cargo build --release
           PUSHPIN_PATH=$(pwd)/target/release/pushpin
           echo "PUSHPIN_PATH=$PUSHPIN_PATH" >> $GITHUB_ENV
