@@ -45,6 +45,8 @@ jobs:
         run: |
           cd ..
           $PUSHPIN_PATH generate
+          ls
+          find .
 
       - name: Remove pushpin local clone
         run: rm -rf cloned-repo
