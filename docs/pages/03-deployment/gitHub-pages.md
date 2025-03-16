@@ -36,7 +36,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Checkout website repo on publish branch
+      - name: Checkout website repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
