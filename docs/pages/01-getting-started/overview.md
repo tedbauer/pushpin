@@ -67,7 +67,7 @@ Pushpin generates HTML files for each Markdown file in `pages/` in the site root
 
 # Newly generated:
 - index.html
-- pages/
+- posts/
   - example_post.html
 ```
 
