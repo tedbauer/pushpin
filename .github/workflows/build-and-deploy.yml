@@ -31,10 +31,10 @@ jobs:
         with:
           repository: tedbauer/pushpin
           ref: master
-          path: cloned-repo/docs
+          path: cloned-repo
 
       - name: Build, install, and run Pushpin
-        working-directory: cloned-repo/docs
+        working-directory: cloned-repo
         run: |
           cargo build --release
           PUSHPIN_PATH=$(pwd)/target/release/pushpin
@@ -43,7 +43,7 @@ jobs:
           $PUSHPIN_PATH generate
 
       - name: Remove pushpin local clone
-        run: rm -rf cloned-repo/docs
+        run: rm -rf cloned-repo
 
       - name: Commit changes and push
         run: |
