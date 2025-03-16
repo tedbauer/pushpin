@@ -25,31 +25,21 @@ jobs:
         with:
           fetch-depth: 0
           ref: master
-
-      - name: Clone pushpin
-        uses: actions/checkout@v3
-        with:
-          repository: tedbauer/pushpin
-          ref: master
-          path: cloned-repo
-
-      - name: Build, install, and run Pushpin
-        working-directory: cloned-repo
+  
+      - name: Build, and install Pushpin
         run: |
+          ls
           cargo build --release
           PUSHPIN_PATH=$(pwd)/target/release/pushpin
           echo "PUSHPIN_PATH=$PUSHPIN_PATH" >> $GITHUB_ENV
 
       - name: Run Pushpin
-        working-directory: cloned-repo
         run: |
-          cd ..
+          ls
+          cd docs
           $PUSHPIN_PATH generate
           ls
           find .
-
-      - name: Remove pushpin local clone
-        run: rm -rf cloned-repo
 
       - name: Commit changes and push
         run: |
