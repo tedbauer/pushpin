@@ -4,7 +4,7 @@ template: github-pages.html
 
 # Deploy on GitHub Pages
 
-GitHub lets you serve HTML file pages from a configurable branch and directory in the repository. Check out GitHub's [instructions for setting that up](https://docs.github.com/en/pages/quickstart).
+GitHub lets you serve HTML file pages from a configurable branch and directory in the repository. Check out GitHub's [instructions for setting that up](https://docs.github.com/en/pages/quickstart). Note that by default, GitHub Pages sets up a workflow that runs Jekyll and publishes that; we want to disable that by creating an empty file called `.nojekyll` in the website root, as well as in `docs/` if you publish your site in that directory.
 
 To deploy a site with Pushpin and GitHub pages, you can set up some automation for each commit to your site's repo:
 
