@@ -58,7 +58,7 @@ Pushpin generates HTML files for each Markdown file in `pages/` in the site root
 ```
 - pages/
     - index.md
-    - posts/example_post.md
+    - posts/example-post.md
 - templates/
     - index.html
     - post.html
@@ -90,7 +90,7 @@ Create a new directory in `pages/` called `example-section`, and add a Markdown 
     - style.css
 - index.html
 - pages/
-  - example_post.html
+  - example-post.html
 ```
 
 By adding a directory in `pages/`, we have created a [Section](../concepts/sections.html), one way to organize site pages.
