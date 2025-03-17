@@ -75,7 +75,7 @@ This is the primary local development flow. When you [deploy](../03-deployment/g
 
 ### Add a new page and template
 
-Create a new directory in `pages/` called `example-section`, and add a Markdown file called `example-page.md` inside. Add a new template for it called `example_page.html`:
+Create a new directory in `pages/` called `example-section`, and add a Markdown file called `example-page.md` inside. Add a new template for it called `page.html`:
 
 ```
 - pages/
@@ -86,6 +86,7 @@ Create a new directory in `pages/` called `example-section`, and add a Markdown 
 - templates/
     - index.html
     - post.html
+    - page.html # New template for example-page.md
 - style/
     - style.css
 - index.html
