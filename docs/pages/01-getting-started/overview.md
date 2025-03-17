@@ -100,7 +100,7 @@ Write some content in `example-page.md`. Associate it with its template with Fro
 
 ```
 ---
-template: example-page.html
+template: page.html
 ---
 
 # Example page header
