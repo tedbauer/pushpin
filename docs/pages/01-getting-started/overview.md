@@ -94,7 +94,7 @@ Create a new directory in `pages/` called `example-section`, and add a Markdown 
   - example-post.html
 ```
 
-By adding a directory in `pages/`, we have created a [Section](../concepts/sections.html), one way to organize site pages.
+By adding a directory in `pages/`, we have created a [Section](../02-concepts/sections.html), one way to organize site pages.
 
 Write some content in `example-page.md`. Associate it with its template with Frontmatter:
 
