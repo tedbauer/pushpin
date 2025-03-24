@@ -55,7 +55,7 @@ Type Ctrl+C to stop.
 
 Pushpin generates HTML files for each Markdown file in `pages/` in the site root directory. Similar to SSGs like Zola, the directory structure of the output is based on the structure of the Markdown files.
 
-```
+```md
 - pages/
     - index.md
     - posts/example-post.md
@@ -68,7 +68,7 @@ Pushpin generates HTML files for each Markdown file in `pages/` in the site root
 # Newly generated:
 - index.html
 - posts/
-  - example_post.html
+  - example-post.html
 ```
 
 This is the primary local development flow. When you [deploy](../03-deployment/gitHub-pages.html), you'll likely use `pushpin generate` to generate the site files, instead of `pushpin serve`.
