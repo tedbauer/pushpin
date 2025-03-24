@@ -120,7 +120,7 @@ Add this code for the template:
 </html>
 ```
 
-The Markdown content is compiled to HTML, and then inserted into templates via `content | safe`.
+Run `pushpin serve`. The Markdown content is compiled to HTML, and then inserted into templates via `content | safe`.
 
 Finally, navigate to `http://127.0.0.1:7878/example-section/example-page.html` to see the generated page.
 
