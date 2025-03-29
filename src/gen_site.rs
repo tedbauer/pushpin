@@ -180,8 +180,10 @@ This is an example post.
 
 "#;
 
-const INITIAL_INDEX_TEMPLATE: &str = "<!DOCTYPE html><head></head><body>{{content}}</body></html>";
-const INITIAL_POST_TEMPLATE: &str = "<!DOCTYPE html><head></head><body>{{content}}</body></html>";
+const INITIAL_INDEX_TEMPLATE: &str =
+    "<!DOCTYPE html><head></head><body>{{content | safe}}</body></html>";
+const INITIAL_POST_TEMPLATE: &str =
+    "<!DOCTYPE html><head></head><body>{{content | safe}}</body></html>";
 
 const INITIAL_CONFIG: &str = r#"homepage: index.md
 
@@ -303,8 +305,6 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
         order,
     };
 
-    println!("Parsing section: {} with order={order}", section.title);
-
     let mut pages = vec![];
     let mut subsections = vec![];
 
@@ -353,10 +353,6 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
     section.pages = pages;
     section.subsections = subsections;
     section.subsections.sort_by(|a, b| a.order.cmp(&b.order));
-    println!("After sorting, heres the order of subsections:");
-    for section in &section.subsections {
-        println!("{}: {}", section.title, section.order);
-    }
 
     Ok(section)
 }
