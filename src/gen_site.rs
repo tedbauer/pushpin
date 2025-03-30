@@ -81,7 +81,6 @@ fn generate_page(
     template_name: Option<String>,
     title: &str,
     context: &tera::Context,
-    target_path: &PathBuf,
 ) -> Result<String> {
     let mut options = pulldown_cmark::Options::empty();
     options.insert(Options::ENABLE_TABLES);
@@ -96,7 +95,7 @@ fn generate_page(
     let mut context = context.clone();
     context.insert("content", &html_content);
     context.insert("title", title);
-    context.insert("path", &target_path);
+    context.insert("path", &markdown_path);
 
     // TODO: if a template is not found, we need a more helpful error message.
     if let Some(template_name) = template_name {
@@ -126,7 +125,6 @@ fn write_page(
         template_name,
         title,
         context,
-        target_path,
     )?;
 
     fs::create_dir_all(target_path.parent().unwrap())?;
