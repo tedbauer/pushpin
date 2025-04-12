@@ -6,8 +6,7 @@ use std::path::Path;
 
 pub(crate) fn serve() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    println!("📌 local server available at http://127.0.0.1:7878");
-    println!("\nType Ctrl+C to stop.");
+
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 

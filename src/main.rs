@@ -1,11 +1,13 @@
 use std::fs::File;
 use std::io::Read;
+use std::thread;
 
 use anyhow::Result;
 use yaml_rust::{Yaml, YamlLoader};
 
 mod gen_site;
 mod serve;
+mod watcher;
 
 use clap::{Parser, Subcommand};
 
@@ -24,7 +26,11 @@ enum Commands {
         title: Option<String>,
     },
     Generate,
-    Serve,
+    #[command(name = "serve", alias = "serve")]
+    Serve {
+        #[arg(long)]
+        watch: bool,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -87,9 +93,50 @@ fn main() -> Result<(), std::io::Error> {
         Commands::Generate => {
             let _ = gen();
         }
-        Commands::Serve => {
+        Commands::Serve { watch } => {
             let _ = gen();
-            serve::serve();
+
+            if !(*watch) {
+                println!(
+                    "📌 local server available at http://127.0.0.1:7878 (type Ctrl+C to stop)"
+                );
+                serve::serve();
+                return Ok(());
+            }
+
+            println!("📌 local server available at http://127.0.0.1:7878");
+            let server_handle = thread::spawn(|| {
+                serve::serve();
+            });
+
+            println!("🔍 Watching for changes in 'pages/', 'templates/', (type Ctrl+C to stop):");
+            let pages_watcher_handle = watcher::start_file_watcher(
+                "pages",
+                |_| {
+                    let _ = gen();
+                },
+                true,
+            );
+            let watcher_handle = watcher::start_file_watcher(
+                "templates",
+                |_| {
+                    let _ = gen();
+                },
+                true,
+            );
+
+            if let Err(e) = pages_watcher_handle.join() {
+                eprintln!("😥 internal error: {:?}. Please file a bug at https://github.com/tedbauer/pushpin/issues.", e);
+            }
+
+            if let Err(e) = watcher_handle.join() {
+                eprintln!("😥 internal error: {:?}. Please file a bug at https://github.com/tedbauer/pushpin/issues.", e);
+            }
+
+            // Join the server handle
+            if let Err(e) = server_handle.join() {
+                eprintln!("😥 internal error: {:?}. Please file a bug at https://github.com/tedbauer/pushpin/issues.", e);
+            }
         }
     }
     Ok(())

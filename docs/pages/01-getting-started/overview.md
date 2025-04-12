@@ -46,12 +46,13 @@ In `my-new-site`, generate the site and serve it with a local server:
 
 ```
 $ cd my-new-site
-$ pushpin serve
-📌 success: generated site
+$ pushpin serve --watch
+📌 success: generated site; created 8 files
 📌 local server available at http://127.0.0.1:7878
-
-Type Ctrl+C to stop.
+🔍 Watching for changes in 'pages/', 'templates/', (type Ctrl+C to stop):
 ```
+
+The `--watch` flag is optional; when supplied, Pushpin will automatically re-run when you update any content or template.
 
 Pushpin generates HTML files for each Markdown file in `pages/` in the site root directory. Similar to SSGs like Zola, the directory structure of the output is based on the structure of the Markdown files.
 
