@@ -13,4 +13,5 @@ tera = "1.19.1"
 anyhow = "1.0.82"
 serde_yaml = "0.9.34"
 clap = { version = "4.5.31", features = ["derive"] }
+notify = "8.0.0"
 
