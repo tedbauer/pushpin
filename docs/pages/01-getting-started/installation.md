@@ -4,7 +4,7 @@ template: installation.html
 
 # Installation
 
-Pushpin is written in Rust. Install it, then clone the repo, build it, and create an alias.
+Pushpin is written in Rust. Install it by cloning the repo, building it, and creating an alias.
 
 ```
 git clone https://github.com/tedbauer/pushpin
