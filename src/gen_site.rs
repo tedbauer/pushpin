@@ -308,6 +308,10 @@ fn parse_sections(dir: &PathBuf, config: &Config) -> Result<Section> {
     let mut pages = vec![];
     let mut subsections = vec![];
 
+    println!(">>>>");
+    println!("Here is the config passed in: {:?}", config);
+    println!("<<<<");
+
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let path = entry.path();
@@ -323,12 +327,16 @@ fn parse_sections(dir: &PathBuf, config: &Config) -> Result<Section> {
 
             // Check if this is a post defined in config, use config title if so
             let path_str = path.to_str().ok_or(anyhow!("file name error"))?;
-            let title = config.posts.iter()
-                .find(|post| post.path == path_str)
+            println!("oooooo");
+            println!("path_str: {}", path_str);
+            println!("oooooo");
+            let title = config
+                .posts
+                .iter()
+                .find(|post| format!("pages/{}", post.path) == path_str)
                 .map(|post| post.title.clone())
                 .unwrap_or_else(|| {
-                    path
-                        .with_extension("")
+                    path.with_extension("")
                         .file_name()
                         .ok_or(anyhow!("file name error"))
                         .unwrap()
@@ -363,6 +371,9 @@ fn parse_sections(dir: &PathBuf, config: &Config) -> Result<Section> {
     section.subsections = subsections;
     section.subsections.sort_by(|a, b| a.order.cmp(&b.order));
 
+    println!("----");
+    println!("Parsed section: {:?}", section);
+    println!("----");
     Ok(section)
 }
 
