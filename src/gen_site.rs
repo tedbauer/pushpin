@@ -274,7 +274,7 @@ fn parse_order_from_pathbuf(path: &PathBuf) -> Option<usize> {
     None
 }
 
-fn parse_sections(dir: &PathBuf) -> Result<Section> {
+fn parse_sections(dir: &PathBuf, config: &Config) -> Result<Section> {
     // If the dir starts with an integer followed by a -, assume that the integer is the order.
     let order = parse_order_from_pathbuf(dir).unwrap_or(0);
 
@@ -312,7 +312,7 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
         let entry = entry?;
         let path = entry.path();
         if path.is_dir() {
-            let subsection = parse_sections(&path)?;
+            let subsection = parse_sections(&path, config)?;
             subsections.push(subsection);
         } else {
             let mut file = File::open(&path)?;
@@ -321,14 +321,23 @@ fn parse_sections(dir: &PathBuf) -> Result<Section> {
 
             let metadata = read_metadata(&path)?;
 
-            let title = path
-                .with_extension("")
-                .file_name()
-                .ok_or(anyhow!("file name error"))?
-                .to_str()
-                .map(|s| capitalize_string(&s.replace("-", " ")))
-                .ok_or(anyhow!("file name error"))?
-                .to_string();
+            // Check if this is a post defined in config, use config title if so
+            let path_str = path.to_str().ok_or(anyhow!("file name error"))?;
+            let title = config.posts.iter()
+                .find(|post| post.path == path_str)
+                .map(|post| post.title.clone())
+                .unwrap_or_else(|| {
+                    path
+                        .with_extension("")
+                        .file_name()
+                        .ok_or(anyhow!("file name error"))
+                        .unwrap()
+                        .to_str()
+                        .map(|s| capitalize_string(&s.replace("-", " ")))
+                        .ok_or(anyhow!("file name error"))
+                        .unwrap()
+                        .to_string()
+                });
             let template_path = if let Some(m) = metadata {
                 Some(m.template)
             } else {
@@ -386,7 +395,7 @@ fn generate_sections(
 }
 
 pub(crate) fn generate(config: &Config) -> Result<usize> {
-    let sections = parse_sections(&PathBuf::from("pages"))?;
+    let sections = parse_sections(&PathBuf::from("pages"), config)?;
     let tera = Tera::new("templates/*.html")?;
     let mut context = tera::Context::new();
     context.insert("sections", &sections);
