@@ -7,7 +7,6 @@ use std::path::PathBuf;
 use crate::Config;
 use anyhow::{anyhow, Result};
 use pulldown_cmark::Alignment;
-use pulldown_cmark::CowStr;
 use pulldown_cmark::DefaultBrokenLinkCallback;
 use pulldown_cmark::Event;
 use pulldown_cmark::Options;
@@ -190,14 +189,17 @@ fn write_page(
     tera: &Tera,
     config: &Config,
     global_context: &tera::Context,
+    page_title: &str,
 ) -> Result<()> {
     // We now call our new, powerful render function.
+    let mut context_for_page = global_context.clone();
+    context_for_page.insert("page_title", page_title);
     let rendered_html = render_page_html(
         full_markdown_content,
         markdown_path,
         tera,
         config,
-        global_context,
+        &context_for_page,
     )?;
 
     // Create parent directories if they don't exist.
@@ -304,6 +306,7 @@ struct Page {
     target_path: PathBuf,
     markdown_content: String,
     markdown_path: String,
+    title: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -395,10 +398,37 @@ fn parse_sections(dir: &PathBuf, config: &Config) -> Result<Section> {
             let target_path = path.strip_prefix("pages")?;
             let target_path = target_path.with_extension("html");
 
+            let (front_matter_str, _) = split_document(&content)?;
+            let front_matter_value = if let Some(yaml_str) = front_matter_str {
+                serde_yaml::from_str::<serde_json::Value>(yaml_str).ok()
+            } else {
+                None
+            };
+
+            let title = if let Some(Value::Object(map)) = front_matter_value {
+                if let Some(Value::String(t)) = map.get("title") {
+                    t.clone()
+                } else {
+                    capitalize_string(
+                        path.file_stem()
+                            .and_then(|s| s.to_str())
+                            .unwrap_or("")
+                            .replace("-", " ")
+                            .as_str(),
+                    )
+                }
+            } else {
+                path.file_stem()
+                    .and_then(|s| s.to_str())
+                    .map(|s| capitalize_string(s.replace("-", " ").as_str()))
+                    .unwrap_or("".to_string())
+            };
+
             let page = Page {
                 target_path,
                 markdown_content: content,
                 markdown_path: path.to_str().ok_or(anyhow!("file name error"))?.to_string(),
+                title,
             };
 
             pages.push(page);
@@ -428,6 +458,7 @@ fn generate_sections(
             tera,
             config,
             context, // This is the global context
+            &page.title,
         )?;
         total += 1;
     }
