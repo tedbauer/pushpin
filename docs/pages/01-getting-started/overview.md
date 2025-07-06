@@ -25,7 +25,7 @@ $ pushpin init my-new-site
 📌 success: initialized new site 'my-new-site'
 ```
 
-`my-new-site` will contain this directory structure:
+`my-new-site` will contain the following directory structure:
 
 ```
 - pages/
