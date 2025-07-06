@@ -1,4 +1,4 @@
-# Project: Pushpin
+# GEMINI.md
 
 Pushpin is a static site generator written in Rust. It takes Markdown files and templates to generate a static HTML website.
 
