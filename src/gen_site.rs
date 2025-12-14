@@ -214,18 +214,11 @@ fn write_page(
 const INITIAL_INDEX_MD: &str = r#"---
 template: index.html
 title: My Site
-introduction: |
-  This is an **introductory paragraph** rendered from the front matter.
-  It's a great place for a summary.
-posts_list: "[[ListPosts]]"
-my_table: |
-  | Header 1 | Header 2 |
-  |---|---|
-  | Cell 1.1 | Cell 1.2 |
-  | Cell 2.1 | Cell 2.2 |
 ---
 
-Welcome to my new site! This is the main content area.
+Welcome to your new site! This is the main content area.
+
+[[ListPosts]]
 "#;
 
 const INITIAL_POST_MD: &str = r#"---
