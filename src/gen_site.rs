@@ -238,11 +238,7 @@ const INITIAL_INDEX_TEMPLATE: &str = r#"<!DOCTYPE html>
 <body>
   <header>
     <h1>{{ title | safe }}</h1>
-    <div class="intro">
-      {{ introduction | safe }}
-    </div>
   </header>
-  <hr>
   <main>
     {{ content | safe }}
   </main>
