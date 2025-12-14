@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Pushpin
+    </title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <meta charset="UTF-8">
+</head>
+
+
+
+<body>
+    <div class="toplevel">
+        <div class="nav">
+            <div class="headerbox">
+                <h1><img src="../images/pushpin_paint.png" width="50px" height="75px"><a
+                        href="../index.html">Pushpin</a></h1>
+                <a href="https://github.com/tedbauer/pushpin"><img src="../images/github-mark.png" width="25px"
+                        height="25px" />GitHub</a>
+            </div>
+            
+
+            
+            
+            <h2>Getting Started</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../01-getting-started&#x2F;installation.html">
+                    <div 
+                        class="pages-nav-not-selected" >Installation</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../01-getting-started&#x2F;overview.html">
+                    <div 
+                        class="pages-nav-not-selected" >Overview</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+            
+            <h2>Concepts</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;sections.html">
+                    <div  class="pages-nav-selected" >Sections</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;pages.html">
+                    <div 
+                        class="pages-nav-not-selected" >Pages</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;templates.html">
+                    <div 
+                        class="pages-nav-not-selected" >Templates</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;CLI.html">
+                    <div 
+                        class="pages-nav-not-selected" >CLI</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+            
+            <h2>Deployment</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../03-deployment&#x2F;gitHub-pages.html">
+                    <div 
+                        class="pages-nav-not-selected" >GitHub Pages</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+        </div>
+
+        <div class="content">
+            <h1>Sections</h1>
+<p>Sections are logical organizations of a site. They are inferred from the Markdown file structure in <code>&lt;site-root&gt;/pages/</code>. For example,</p>
+<pre><code>- site-root/
+  - pages/
+    - section-1
+      - page-1a.md
+      - page-1b.md
+    - section-2
+      - page-2a.md
+      - page-2b.md
+</code></pre>
+<p>Will create two sections: <code>Section 1</code> and <code>Section 2</code>. The title is the subdirectory name, with <code>-</code>s converted to spaces, and the resulting string uppercased.</p>
+<h2>Access section data in templates</h2>
+<p>Section structure is available globally to the Tera templates in <code>templates/</code>. It's available as a Tera variable called <code>section</code>, as this type:</p>
+<pre><code class="language-rust">#[derive(Debug, Serialize)]
+struct Page {
+    title: String,                 // The name of the file, with `-`s converted to spaces, and uppercased.
+    template_path: Option&lt;String&gt;, // Path to associated template, if specified in Frontmatter.
+    target_path: PathBuf,          // The path of the generated HTML file, relative to the site root dir.
+    markdown_content: String,      // The Markdown content of the page.
+    markdown_path: String,         // The path to the Markdown file, relative to the site dir.
+}
+
+#[derive(Debug, Serialize)]
+struct Section {
+    title: String,             // The title of the section, with `-`s converted to spaces, and uppercased.
+    pages: Vec&lt;Page&gt;,          // The pages contained in the section.
+    subsections: Vec&lt;Section&gt;, // Any sections contained within the section.
+    order: usize,              // The order that the Section shows up in `section`, inferred from the filename.
+}
+</code></pre>
+<p>Access it to for example create a navbar or table of contents:</p>
+<pre><code>
+&lt;div class="nav"&gt;
+    {% macro render_section(section, selected) %}
+    &lt;h2&gt;{{ section.title }}&lt;/h2&gt;
+
+    {% for page in section.pages %}
+    &lt;a href="../{{ page.target_path }}"&gt;
+        &lt;h3 {% if page.title==selected %}class="selected" {% endif %}&gt;{{page.title}}&lt;/h3&gt;
+    &lt;/a&gt;
+    {% endfor %}
+
+    {% if section.subsections %}
+    &lt;ul&gt;
+        {% for subsection in section.subsections %}
+        {{ self::render_section(section=subsection) }}
+        {% endfor %}
+    &lt;/ul&gt;
+    {% endif %}
+
+    {% endmacro render_section %}
+
+    {% for subsection in sections.subsections %}
+    {{ self::render_section(section=subsection, selected="Title Of Selected Page") }}
+    {% endfor %}
+&lt;/div&gt;
+</code></pre>
+<h2>Specify section ordering</h2>
+<p>The order that a <code>Section</code> appears in <code>subsections</code> can be specified in the directory names, for example <code>01-example-ordered-section/</code>. Without an order at the beginning, the order will be alphabetical.</p>
+
+        </div>
+    </div>
+</body>
+
+
+
+</html>

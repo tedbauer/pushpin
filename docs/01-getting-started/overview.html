@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<head>
+    <title>
+        Pushpin
+    </title>
+    <link rel="stylesheet" href="../style/index.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/merriweather/v30/u-44jCBfJsgP7wwxPTpObkYyWA.woff2" as="font"
+        type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <meta charset="UTF-8">
+</head>
+
+
+
+<body>
+    <div class="toplevel">
+
+        <div class="nav">
+            <div class="headerbox">
+                <h1><img src="../images/pushpin_paint.png" width="50px" height="75px"><a
+                        href="../index.html">Pushpin</a></h1>
+                <a href="https://github.com/tedbauer/pushpin"><img src="../images/github-mark.png" width="25px"
+                        height="25px" />GitHub</a>
+            </div>
+            
+
+            
+            
+            <h2>Getting Started</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../01-getting-started&#x2F;installation.html">
+                    <div 
+                        class="pages-nav-not-selected" >Installation</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../01-getting-started&#x2F;overview.html">
+                    <div  class="pages-nav-selected" >Overview</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+            
+            <h2>Concepts</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;sections.html">
+                    <div 
+                        class="pages-nav-not-selected" >Sections</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;pages.html">
+                    <div 
+                        class="pages-nav-not-selected" >Pages</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;templates.html">
+                    <div 
+                        class="pages-nav-not-selected" >Templates</div>
+                </a>
+            </div>
+            
+            <div class="pages-nav">
+                <a href="../02-concepts&#x2F;CLI.html">
+                    <div 
+                        class="pages-nav-not-selected" >CLI</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+            
+            <h2>Deployment</h2>
+
+            
+            <div class="pages-nav">
+                <a href="../03-deployment&#x2F;gitHub-pages.html">
+                    <div 
+                        class="pages-nav-not-selected" >GitHub Pages</div>
+                </a>
+            </div>
+            
+
+            
+
+            
+            
+        </div>
+
+        <div class="content">
+            <h1>Overview</h1>
+<p>Pushpin is a static site generator focused on simplicity. Write site content in Markdown, style with <a href="https://keats.github.io/tera/docs/">Tera</a> HTML templates, and Pushpin compiles the site to HTML. There are tons of similar  and inspiring static site generators, to name a few:</p>
+<ul>
+<li><a href="https://www.getzola.org/">Zola</a></li>
+<li><a href="https://jekyllrb.com/">Jekyll</a></li>
+<li><a href="https://gohugo.io/">Hugo</a></li>
+<li><a href="https://rust-lang.github.io/mdBook/">mdBook</a></li>
+<li><a href="https://getpelican.com/">Pelican</a></li>
+</ul>
+<h2>Quick tour</h2>
+<p>We'll walk through creating a new site, building it, and examining its structure. Then we'll add a new page and template.</p>
+<h3>Create and examine a new site</h3>
+<p>After <a href="installation.html">installing Pushpin</a>, generate a site:</p>
+<pre><code>$ pushpin init my-new-site
+📌 success: initialized new site 'my-new-site'
+</code></pre>
+<p><code>my-new-site</code> will contain the following directory structure:</p>
+<pre><code>- pages/
+    - index.md
+    - posts/example_post.md
+- templates/
+    - index.html
+    - post.html
+- style/
+    - style.css
+</code></pre>
+<ul>
+<li><code>pages</code> contains the content of your site in Markdown files. Read more about the directory structure in the <a href="../02-concepts/pages.html">Pages page</a>.</li>
+<li><code>templates</code> contains <a href="https://keats.github.io/tera/docs/">Tera</a> HTML templates that your content will be rendered into. See more information in <a href="../02-concepts/templates.html">Templates</a>.</li>
+<li><code>style</code> contains CSS that your templates can load.</li>
+</ul>
+<p>In <code>my-new-site</code>, generate the site and serve it with a local server:</p>
+<pre><code>$ cd my-new-site
+$ pushpin serve --watch
+📌 success: generated site; created 8 files
+📌 local server available at http://127.0.0.1:7878
+🔍 Watching for changes in 'pages/', 'templates/', (type Ctrl+C to stop):
+</code></pre>
+<p>The <code>--watch</code> flag is optional; when supplied, Pushpin will automatically re-run when you update any content or template.</p>
+<p>Pushpin generates HTML files for each Markdown file in <code>pages/</code> in the site root directory. Similar to SSGs like Zola, the directory structure of the output is based on the structure of the Markdown files.</p>
+<pre><code class="language-md">- pages/
+    - index.md
+    - posts/example-post.md
+- templates/
+    - index.html
+    - post.html
+- style/
+    - style.css
+
+# Newly generated:
+- index.html
+- posts/
+  - example-post.html
+</code></pre>
+<p>This is the primary local development flow. When you <a href="../03-deployment/gitHub-pages.html">deploy</a>, you'll likely use <code>pushpin generate</code> to generate the site files, instead of <code>pushpin serve</code>.</p>
+<h3>Add a new page and template</h3>
+<p>Create a new directory in <code>pages/</code> called <code>example-section</code>, and add a Markdown file called <code>example-page.md</code> inside. Add a new template for it called <code>page.html</code>:</p>
+<pre><code>- pages/
+    - index.md
+    - posts/example_post.md
+    - example-section/ # New section
+      - example-page.md # New page in the new section
+- templates/
+    - index.html
+    - post.html
+    - page.html # New template for example-page.md
+- style/
+    - style.css
+- index.html
+- pages/
+  - example-post.html
+</code></pre>
+<p>By adding a directory in <code>pages/</code>, we have created a <a href="../02-concepts/sections.html">Section</a>, one way to organize site pages.</p>
+<p>Write some content in <code>example-page.md</code>. Associate it with its template with Frontmatter:</p>
+<pre><code>---
+template: page.html
+---
+
+# Example page header
+
+This is an example page.
+</code></pre>
+<p>Add this code for the template:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;/head&gt;
+  &lt;body&gt;
+  {{ content | safe}}
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Run <code>pushpin serve</code>. The Markdown content is compiled to HTML, and then inserted into templates via <code>content | safe</code>.</p>
+<p>Finally, navigate to <code>http://127.0.0.1:7878/example-section/example-page.html</code> to see the generated page.</p>
+<p>We've created a site, examined its structure, and we added a new page. This is the primary development loop. To learn more about each concept, check out the rest of the Concepts, as well as Deployment.</p>
+
+        </div>
+    </div>
+</body>
+
+
+
+</html>
