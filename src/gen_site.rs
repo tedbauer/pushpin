@@ -194,6 +194,8 @@ fn write_page(
     // We now call our new, powerful render function.
     let mut context_for_page = global_context.clone();
     context_for_page.insert("page_title", page_title);
+    context_for_page.insert("title", page_title);
+    context_for_page.insert("path", markdown_path);
     let rendered_html = render_page_html(
         full_markdown_content,
         markdown_path,
